@@ -35,3 +35,18 @@ export const pengabdian = [
     status: 'ditolak',
   },
 ]
+
+export const researchData = [
+  {
+    id: 1,
+    title: 'Penelitian A',
+    lead: 'Bayu Priyambada',
+    field: 'Bidang 1',
+    year: '2024',
+    createdAt: '14 Des 2024',
+    status: {
+      kaprodi: true,
+      dppm: true,
+    },
+  },
+]
