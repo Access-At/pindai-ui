@@ -12,11 +12,11 @@ export default function DashboardLayout({
   children: React.ReactNode
 }>) {
   return (
-    <SidebarProvider className="flex w-full max-h-screen overflow-hidden">
+    <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="flex-1 bg-primary/5">
-        <div className="flex flex-1 flex-col container mx-auto px-6">
-          <nav className="bg-background my-5 rounded-lg py-4">
+      <SidebarInset className="bg-primary/5">
+        <div className="flex flex-col container mx-auto px-6 relative">
+          <nav className="bg-background my-5 rounded-lg py-4 sticky top-0 z-10 shadow-md">
             <div className="px-6 flex items-center justify-between">
               <SidebarTrigger />
               <Avatar>
@@ -25,9 +25,11 @@ export default function DashboardLayout({
               </Avatar>
             </div>
           </nav>
-          <div className="flex flex-col overflow-hidden flex-grow">
-            {children}
-          </div>
+          <div className="flex flex-col">{children}</div>
+          <footer className="mt-5 py-4 space-x-2 text-muted-foreground">
+            <span>&copy; 2024, made by</span>
+            <span className="font-bold uppercase">Access Dev Team</span>
+          </footer>
         </div>
       </SidebarInset>
     </SidebarProvider>
