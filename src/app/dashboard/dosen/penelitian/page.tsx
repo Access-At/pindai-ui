@@ -3,5 +3,5 @@ export default function Penelitian() {
     <div>
       <div>Penelitian</div>
     </div>
-  );
+  )
 }

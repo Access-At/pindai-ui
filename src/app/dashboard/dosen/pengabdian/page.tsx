@@ -3,5 +3,5 @@ export default function Pengabdian() {
     <div>
       <div>Pengabdian</div>
     </div>
-  );
+  )
 }

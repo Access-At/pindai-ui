@@ -1,11 +1,15 @@
-import AppSidebar from "~/components/app-sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar";
+import AppSidebar from '~/components/app-sidebar'
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '~/components/ui/sidebar'
 
 export default function DashboardLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <SidebarProvider className="flex w-full max-h-screen overflow-hidden">
@@ -21,9 +25,11 @@ export default function DashboardLayout({
               </Avatar>
             </div>
           </nav>
-          <div className="flex flex-col overflow-hidden flex-grow">{children}</div>
+          <div className="flex flex-col overflow-hidden flex-grow">
+            {children}
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
-  );
+  )
 }

@@ -3,5 +3,5 @@ export default function Publikasi() {
     <div>
       <div>Publikasi</div>
     </div>
-  );
+  )
 }
