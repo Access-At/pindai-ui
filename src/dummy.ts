@@ -50,3 +50,14 @@ export const researchData = [
     },
   },
 ]
+
+export const infoData = [
+  { label: 'NIDN', value: '001' },
+  { label: 'Email', value: 'mail.prodi@pindai.com' },
+  { label: 'No. hp', value: '08123456789' },
+  { label: 'Jabatan Fungsional', value: 'null' },
+  { label: 'SK Jabatan Fungsional', value: 'null' },
+  { label: 'Prodi', value: 'Fakultas Teknik' },
+  { label: 'Schopus ID', value: '10213123213' },
+  { label: 'Scholar ID', value: '10213123213' },
+]
