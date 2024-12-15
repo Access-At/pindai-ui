@@ -1,16 +1,28 @@
+'use client'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import AppSidebar from '~/components/app-sidebar'
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import ProfileButton from '~/components/profile-button'
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from '~/components/ui/sidebar'
+import { hasCookie } from '~/lib/cookie'
 
 export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const router = useRouter()
+  const isLogin = hasCookie('access_token')
+
+  useEffect(() => {
+    if (!isLogin) {
+      return router.push('/')
+    }
+  }, [isLogin, router])
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -19,10 +31,7 @@ export default function DashboardLayout({
           <nav className="bg-background my-5 rounded-lg py-4 sticky top-0 z-10 shadow-md">
             <div className="px-6 flex items-center justify-between">
               <SidebarTrigger />
-              <Avatar>
-                <AvatarImage></AvatarImage>
-                <AvatarFallback>PP</AvatarFallback>
-              </Avatar>
+              <ProfileButton />
             </div>
           </nav>
           <div className="flex flex-col">{children}</div>

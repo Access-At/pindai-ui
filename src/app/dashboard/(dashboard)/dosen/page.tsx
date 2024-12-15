@@ -1,12 +1,18 @@
+'use client'
 import { EllipsisVerticalIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { ActionCard, DashboardCard } from '~/components/cards'
 import { InformationCard } from '~/components/information'
 import StatusBadge from '~/components/status-badge'
 import { Card, CardHeader, CardContent } from '~/components/ui/card'
 import { infoData, penelitian, pengabdian } from '~/dummy'
 import EachUtil from '~/utils/each-util'
+import { getUser } from '~/utils/get-user'
 
 export default function DashboardDosen() {
+  const router = useRouter()
+  const user = getUser()
+  if (user.role !== 'dosen') return router.back()
   return (
     <div className="flex flex-col gap-4">
       <h1 className="capitalize font-semibold text-muted-foreground">dasbor</h1>

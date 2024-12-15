@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Public_Sans } from 'next/font/google'
 import '~/app/globals.css'
+import { Toaster } from '~/components/ui/sonner'
 import { cn } from '~/lib/utils'
 
 const publicSans = Public_Sans({
@@ -20,7 +21,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(publicSans.className)}>{children}</body>
+      <body className={cn(publicSans.className)}>
+        <Toaster
+          position="top-center"
+          closeButton
+          toastOptions={{
+            duration: 5000,
+            classNames: {
+              success: 'text-green-500 bg-background border-none',
+              error: 'text-red-500 bg-background border-none',
+            },
+          }}
+        />
+        {children}
+      </body>
     </html>
   )
 }

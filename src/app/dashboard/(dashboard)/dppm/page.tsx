@@ -1,14 +1,20 @@
+'use client'
 import { EllipsisVerticalIcon } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '~/components/ui/card'
 import { Fakultas, fakultas } from '~/dummy'
 import EachUtil from '~/utils/each-util'
 import { Badge } from '~/components/ui/badge'
+import { useRouter } from 'next/navigation'
+import { getUser } from '~/utils/get-user'
 
-export default function Kaprodi() {
+export default function Dppm() {
+  const router = useRouter()
+  const user = getUser()
+  if (user.role !== 'dppm') return router.back()
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-xl text-muted-foreground">Fakultas (10)</h2>
-      <div className="grid grid-flow-row grid-cols-4 gap-4">
+      <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <EachUtil
           of={fakultas}
           render={(item: Fakultas, index) => (

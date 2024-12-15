@@ -1,4 +1,4 @@
-import api from '~/api/configAapi'
+import api from '~/api/configApi'
 
 export async function fetchUser() {
   const response = await api.get('/user')
