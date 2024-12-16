@@ -8,7 +8,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '~/components/ui/sidebar'
-import { hasCookie } from '~/lib/cookie'
+import { getUser } from '~/utils/get-user'
 
 export default function DashboardLayout({
   children,
@@ -16,16 +16,16 @@ export default function DashboardLayout({
   children: React.ReactNode
 }>) {
   const router = useRouter()
-  const isLogin = hasCookie('access_token')
+  const user = getUser()
 
   useEffect(() => {
-    if (!isLogin) {
-      return router.push('/')
+    if (!user?.role) {
+      return router.push('/dashboard')
     }
-  }, [isLogin, router])
+  }, [router, user])
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar role={user?.role} />
       <SidebarInset className="bg-primary/5">
         <div className="flex flex-col container mx-auto px-6 relative">
           <nav className="bg-background my-5 rounded-lg py-4 sticky top-0 z-10 shadow-md">

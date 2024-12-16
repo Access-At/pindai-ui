@@ -1,25 +1,23 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { hasCookie } from '~/lib/cookie'
 import { getUser } from '~/utils/get-user'
 
 export default function Dashboard() {
   const router = useRouter()
+  const isLogin = hasCookie('access_token')
   const user = getUser()
 
   useEffect(() => {
-    switch (user.role) {
-      case 'kaprodi':
-        router.push(`/dashboard/${user.role}`)
-        break
-      case 'dosen':
-        router.push(`/dashboard/${user.role}`)
-        break
-      case 'dppm':
-        router.push(`/dashboard/${user.role}`)
-        break
-      default:
-        router.push('/')
+    if (!isLogin) {
+      return router.push('/login-first')
     }
-  }, [router, user])
+
+    if (user?.role) {
+      router.replace(`/dashboard/${user.role}`)
+    } else {
+      router.replace('/')
+    }
+  }, [isLogin, router, user])
 }

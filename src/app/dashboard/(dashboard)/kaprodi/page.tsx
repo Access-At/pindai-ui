@@ -1,40 +1,13 @@
-'use client'
-import { EllipsisVerticalIcon } from 'lucide-react'
-import { Card, CardContent, CardHeader } from '~/components/ui/card'
-import { Fakultas, fakultas } from '~/dummy'
-import EachUtil from '~/utils/each-util'
-import { Badge } from '~/components/ui/badge'
-import { useRouter } from 'next/navigation'
-import { getUser } from '~/utils/get-user'
+import Dashboard from '~/components/page/dashboard'
+import { infoData, penelitian, pengabdian } from '~/dummy'
 
-export default function Kaprodi() {
-  const router = useRouter()
-  const user = getUser()
-  if (user.role !== 'kaprodi') return router.back()
+export default function DashboardKaprodi() {
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-xl text-muted-foreground">Fakultas (10)</h2>
-      <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <EachUtil
-          of={fakultas}
-          render={(item: Fakultas, index) => (
-            <Card key={index} className="grow">
-              <CardHeader className="flex flex-row items-center justify-between text-sm">
-                <Badge className="bg-primary/30 text-primary rounded-lg text-center px-3 py-1.5 hover:text-primary-foreground">
-                  {index + 1}
-                </Badge>
-                <EllipsisVerticalIcon className="text-muted-foreground h-5 w-5" />
-              </CardHeader>
-              <CardContent className="flex flex-col items-start gap-4 text-muted-foreground">
-                <h1 className="text-lg leading-none capitalize">{item.name}</h1>
-                <p className="flex items-start gap-2 capitalize">
-                  <span className="text-2xl">{item.jumlahDosen}</span> dosen
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        />
-      </div>
-    </div>
+    <Dashboard
+      title="dasbor"
+      infoData={infoData}
+      penelitianData={penelitian}
+      pengabdianData={pengabdian}
+    />
   )
 }

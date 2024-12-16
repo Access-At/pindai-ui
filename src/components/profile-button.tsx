@@ -59,7 +59,7 @@ export default function ProfileButton() {
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-gray-300" />
         <Link
-          href={`/dashboard/${user.role}/akun-saya`}
+          href={`/dashboard/${user?.role}/akun-saya`}
           className={cn(
             buttonVariants({ variant: 'ghost' }),
             'w-full justify-start',

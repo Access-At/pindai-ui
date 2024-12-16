@@ -1,6 +1,6 @@
 'use client'
 import { HomeIcon, LayersIcon } from 'lucide-react'
-import { Button, buttonVariants } from './ui/button'
+import { buttonVariants } from './ui/button'
 import {
   Sidebar,
   SidebarHeader,
@@ -41,12 +41,12 @@ export default function AppSidebar({ role }: { role?: string }) {
       </SidebarHeader>
       <SidebarContent className="my-2 space-y-2 p-0">
         <SidebarMenu className="space-y-2 w-full">
-          <Link href="/dashboard/dosen" className="px-6 relative">
+          <Link href="/dashboard/${role}" className="px-6 relative">
             <SidebarMenuItem
               className={cn(
                 buttonVariants({ variant: 'ghost' }),
                 'gap-2 w-full justify-start hover:bg-primary/30 hover:text-primary',
-                isActivePage('/dashboard/dosen')
+                isActivePage('/dashboard/${role}')
                   ? 'bg-primary/30 text-primary hover:text-primary-foreground hover:bg-primary'
                   : '',
               )}
@@ -56,13 +56,58 @@ export default function AppSidebar({ role }: { role?: string }) {
             </SidebarMenuItem>
             <div
               className={cn(
-                isActivePage('/dashboard/dosen')
+                isActivePage('/dashboard/${role}')
                   ? 'absolute right-0 top-0 h-full w-[2px] bg-primary bg-[length:1px_100%] rounded-full'
                   : '',
               )}
             />
           </Link>
         </SidebarMenu>
+        {role === 'kaprodi' || role === 'dppm' ? (
+          <SidebarGroup className="px-0">
+            <div className="flex items-center">
+              <Separator className="w-[1rem] bg-black" />
+              <SidebarGroupLabel className="uppercase">
+                Main Menu
+              </SidebarGroupLabel>
+            </div>
+            <SidebarGroupContent>
+              <SidebarMenu className="px-6">
+                <EachUtil
+                  of={mainMenu}
+                  render={({ name }, index) => (
+                    <Link
+                      href={`/dashboard/${role}/${name}`}
+                      className={cn('relative px-6')}
+                      key={index}
+                    >
+                      <SidebarMenuItem
+                        className={cn(
+                          buttonVariants({ variant: 'ghost' }),
+                          'gap-2 w-full justify-start hover:bg-primary/30 hover:text-primary',
+                          isActivePage(`/dashboard/${role}/${name}`)
+                            ? 'bg-primary/30 text-primary hover:text-primary-foreground hover:bg-primary'
+                            : '',
+                        )}
+                      >
+                        <LayersIcon />
+                        <span className="capitalize">{name}</span>
+                      </SidebarMenuItem>
+
+                      <div
+                        className={cn(
+                          isActivePage(`/dashboard/${role}/${name}`)
+                            ? 'absolute right-0 top-0 h-full w-[2px] bg-primary bg-[length:1px_100%] rounded-full'
+                            : '',
+                        )}
+                      />
+                    </Link>
+                  )}
+                />
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ) : null}
         <SidebarGroup className="px-0 space-y-2">
           <div className="flex items-center">
             <Separator className="w-[1rem] bg-black" />
@@ -75,7 +120,7 @@ export default function AppSidebar({ role }: { role?: string }) {
               of={mainMenu}
               render={({ name }, index) => (
                 <Link
-                  href={`/dashboard/dosen/${name}`}
+                  href={`/dashboard/${role}/${name}`}
                   className={cn('relative px-6')}
                   key={index}
                 >
@@ -83,7 +128,7 @@ export default function AppSidebar({ role }: { role?: string }) {
                     className={cn(
                       buttonVariants({ variant: 'ghost' }),
                       'gap-2 w-full justify-start hover:bg-primary/30 hover:text-primary',
-                      isActivePage(`/dashboard/dosen/${name}`)
+                      isActivePage(`/dashboard/${role}/${name}`)
                         ? 'bg-primary/30 text-primary hover:text-primary-foreground hover:bg-primary'
                         : '',
                     )}
@@ -94,7 +139,7 @@ export default function AppSidebar({ role }: { role?: string }) {
 
                   <div
                     className={cn(
-                      isActivePage(`/dashboard/dosen/${name}`)
+                      isActivePage(`/dashboard/${role}/${name}`)
                         ? 'absolute right-0 top-0 h-full w-[2px] bg-primary bg-[length:1px_100%] rounded-full'
                         : '',
                     )}
@@ -104,41 +149,6 @@ export default function AppSidebar({ role }: { role?: string }) {
             />
           </SidebarMenu>
         </SidebarGroup>
-        {role === 'kaprodi' || role === 'dppm' ? (
-          <SidebarGroup className="px-0">
-            <div className="flex items-center">
-              <Separator className="w-[1rem] bg-black" />
-              <SidebarGroupLabel className="uppercase">
-                Main Menu
-              </SidebarGroupLabel>
-            </div>
-            <SidebarGroupContent>
-              <SidebarMenu className="px-6">
-                <Button
-                  asChild
-                  className="cursor-pointer justify-start"
-                  variant="ghost"
-                >
-                  <SidebarMenuItem>Penelitian</SidebarMenuItem>
-                </Button>
-                <Button
-                  asChild
-                  className="cursor-pointer justify-start"
-                  variant="ghost"
-                >
-                  <SidebarMenuItem>Pengabdian</SidebarMenuItem>
-                </Button>
-                <Button
-                  asChild
-                  className="cursor-pointer justify-start"
-                  variant="ghost"
-                >
-                  <SidebarMenuItem>Publikasi</SidebarMenuItem>
-                </Button>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ) : null}
       </SidebarContent>
     </Sidebar>
   )

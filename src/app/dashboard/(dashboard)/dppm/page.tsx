@@ -4,16 +4,17 @@ import { Card, CardContent, CardHeader } from '~/components/ui/card'
 import { Fakultas, fakultas } from '~/dummy'
 import EachUtil from '~/utils/each-util'
 import { Badge } from '~/components/ui/badge'
-import { useRouter } from 'next/navigation'
+import { ActionCard } from '~/components/cards'
 import { getUser } from '~/utils/get-user'
+import { InformationCard } from '~/components/information'
 
-export default function Dppm() {
-  const router = useRouter()
+export default function DashboardDppm() {
   const user = getUser()
-  if (user.role !== 'dppm') return router.back()
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-xl text-muted-foreground">Fakultas (10)</h2>
+      <h2 className="text-xl text-muted-foreground capitalize">
+        Fakultas (10)
+      </h2>
       <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <EachUtil
           of={fakultas}
@@ -34,6 +35,19 @@ export default function Dppm() {
             </Card>
           )}
         />
+      </div>
+
+      <h2 className="text-xl text-muted-foreground capitalize">
+        Penelitian / Pengabdian
+      </h2>
+      <div className="flex items-center justify-center gap-4">
+        <ActionCard title="penelitian" role={user?.role} />
+        <ActionCard title="pengabdian" role={user?.role} />
+      </div>
+
+      <div className="flex items-center justify-center gap-4">
+        <InformationCard title="penelitian terbaru" role={user?.role} />
+        <InformationCard title="pengabdian terbaru" role={user?.role} />
       </div>
     </div>
   )
