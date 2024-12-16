@@ -2,7 +2,7 @@
 import crypto from 'crypto'
 
 const ALGORITHM = 'aes-256-gcm'
-const ENCRYPTION_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || '' // Harus 32 karakter
+const ENCRYPTION_KEY = process.env.NEXT_PUBLIC_SECURE_COMMUNICATION_KEY || ''
 const IV_LENGTH = 12 // Panjang IV untuk AES-GCM
 const TAG_LENGTH = 16 // Panjang tag autentikasi
 

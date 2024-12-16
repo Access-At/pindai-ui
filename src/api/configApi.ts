@@ -1,7 +1,14 @@
+import {
+  createPayload,
+  createSalt,
+  createSignature,
+  createTimestamp,
+  decrypt,
+  encrypt,
+} from '~/lib/cryptoService'
+
 import axios from 'axios'
 import { getCookie } from '~/lib/cookie'
-// import crypto from 'crypto'
-import { decrypt, encrypt } from '~/lib/crypto'
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL, // Gunakan .env
@@ -15,27 +22,26 @@ const api = axios.create({
 // Request Interceptor
 api.interceptors.request.use(
   (config) => {
-    // const timestamp = Math.floor(Date.now() / 1000) // Timestamp dalam detik
-    // const salt = crypto.randomBytes(16).toString('hex') // Salt dinamis
-    // const secretKey = process.env.NEXT_PUBLIC_SECURE_API_KEY || ''
     const encryptedData = encrypt(JSON.stringify(config.data))
-    // const payload = `${timestamp}${salt}${JSON.stringify(config.data)}`
-    // const payload = `${timestamp}${salt}${encryptedData}`
-    // const signature = crypto
-    //   .createHmac('sha256', secretKey)
-    //   .update(payload)
-    //   .digest('hex')
+
+    if (encryptedData.error) return Promise.reject(encryptedData.error)
+
+    const timestamp = createTimestamp()
+    const salt = createSalt()
+    const payload = createPayload(timestamp, salt, config.data)
+    const signature = createSignature(payload)
 
     const token = getCookie('access_token')
-    config.data = encryptedData
-    // config.headers['X-TIMESTAMP'] = timestamp
-    // config.headers['X-SALT'] = salt
-    // config.headers['X-SIGNATURE'] = signature
-    // config.headers['X-PAYLOAD'] = payload
+    config.data = encryptedData.data
+
+    config.headers['X-TIMESTAMP'] = timestamp
+    config.headers['X-SALT'] = salt
+    config.headers['X-SIGNATURE'] = signature
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
+
     return config
   },
   (error) => Promise.reject(error),
@@ -46,11 +52,14 @@ api.interceptors.response.use(
   (response) => {
     const encryptedResponse = response.data.data
     const decryptedResponse = decrypt(encryptedResponse)
+
+    if (decryptedResponse.error) return Promise.reject(decryptedResponse.error)
+
     return {
       ...response,
       data: {
         ...response.data,
-        data: JSON.parse(decryptedResponse),
+        data: JSON.parse(decryptedResponse.data ?? ''),
       },
     }
   },
