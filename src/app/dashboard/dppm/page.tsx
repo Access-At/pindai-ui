@@ -5,10 +5,21 @@ import EachUtil from '~/utils/each-util'
 import { Badge } from '~/components/ui/badge'
 import { ActionCard } from '~/components/cards'
 import { InformationCard } from '~/components/information'
-import { fetchUser } from '~/api/response/user-response'
+import { redirect, RedirectType } from 'next/navigation'
+import { cookies } from 'next/headers'
+import { getCookieDecrypted } from '~/utils/cookie'
 
 export default async function DashboardDppm() {
-  const user = await fetchUser()
+  const user = await getCookieDecrypted('user')
+  const cookie = await cookies()
+  const isLogin = cookie.has('access_token')
+  if (!isLogin) {
+    return redirect('/', 'push' as RedirectType)
+  }
+
+  if (user?.role !== 'dppm') {
+    return redirect(`/dashboard/${user?.role}`, 'push' as RedirectType)
+  }
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-xl text-muted-foreground capitalize">

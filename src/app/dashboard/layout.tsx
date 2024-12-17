@@ -1,5 +1,3 @@
-import { redirect } from 'next/navigation'
-import { fetchUser } from '~/api/response/user-response'
 import AppSidebar from '~/components/app-sidebar'
 import ProfileButton from '~/components/profile-button'
 import {
@@ -7,17 +5,15 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '~/components/ui/sidebar'
+import { getCookieDecrypted } from '~/utils/cookie'
 
 export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const user = await fetchUser()
+  const user = await getCookieDecrypted('user')
 
-  if (!user?.role) {
-    return redirect('/dashboard')
-  }
   return (
     <SidebarProvider>
       <AppSidebar role={user?.role} />
@@ -26,7 +22,7 @@ export default async function DashboardLayout({
           <nav className="bg-background my-5 rounded-lg py-4 sticky top-0 z-10 shadow-md">
             <div className="px-6 flex items-center justify-between">
               <SidebarTrigger />
-              <ProfileButton />
+              <ProfileButton role={user?.role} name={user?.name} />
             </div>
           </nav>
           <div className="flex flex-col">{children}</div>

@@ -9,25 +9,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
-import { getUser } from '~/utils/get-user'
 import { Button, buttonVariants } from './ui/button'
-import { cn } from '~/lib/utils'
-import { removeCookie } from '~/lib/cookie'
+import { cn, getInitials } from '~/lib/utils'
 import { useRouter } from 'next/navigation'
 import { logoutUser } from '~/api/request/auth-request'
 import { toast } from 'sonner'
+import { removeCookie } from '~/utils/cookie'
 
-export default function ProfileButton() {
+export default function ProfileButton({
+  role,
+  name,
+}: {
+  role: string
+  name: string
+}) {
   const router = useRouter()
-  const user = getUser()
 
-  const handleLogout = () => {
-    logoutUser()
-      .then((res) => {
-        toast.success(res.data.message, {})
-        removeCookie('access_token')
-        removeCookie('user')
-        router.push('/')
+  const handleLogout = async () => {
+    await logoutUser()
+      .then(async (res) => {
+        toast.success(res.message, {})
+        await removeCookie('access_token')
+        await removeCookie('role')
+        return router.push('/')
       })
       .catch((err) => {
         toast.error(err.response.data.message, {})
@@ -39,27 +43,27 @@ export default function ProfileButton() {
       <DropdownMenuTrigger>
         <Avatar>
           <AvatarImage></AvatarImage>
-          <AvatarFallback>PP</AvatarFallback>
+          <AvatarFallback>{getInitials(name)}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent side="bottom" align="end" className="w-52">
+      <DropdownMenuContent side="bottom" align="end" className="w-64">
         <DropdownMenuItem className="flex flex-row gap-4">
           <Avatar>
             <AvatarImage></AvatarImage>
-            <AvatarFallback>PP</AvatarFallback>
+            <AvatarFallback>{getInitials(name)}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col gap-2">
-            <span className="font-bold text-muted-foreground capitalize">
-              nama user
+          <div className="flex flex-col gap-2 overflow-hidden">
+            <span className="font-bold text-muted-foreground capitalize truncate">
+              {name}
             </span>
             <span className="font-medium text-muted-foreground capitalize">
-              role
+              {role}
             </span>
           </div>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-gray-300" />
         <Link
-          href={`/dashboard/${user?.role}/akun-saya`}
+          href={`/dashboard/${role}/akun-saya`}
           className={cn(
             buttonVariants({ variant: 'ghost' }),
             'w-full justify-start',

@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
+import { redirect, RedirectType } from 'next/navigation'
+import { getCookieDecrypted } from '~/utils/cookie'
 
 export default async function Layout({
   children,
@@ -8,9 +9,10 @@ export default async function Layout({
 }>) {
   const cookie = await cookies()
   const isLogin = cookie.has('access_token')
+  const user = await getCookieDecrypted('user')
 
   if (isLogin) {
-    return redirect('/dashboard')
+    return redirect(`/dashboard/${user?.role}`, 'push' as RedirectType)
   }
 
   return (

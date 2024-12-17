@@ -5,10 +5,10 @@ import {
   createTimestamp,
   decrypt,
   encrypt,
-} from '~/lib/cryptoService'
+} from '~/lib/crypto'
 
 import axios from 'axios'
-import { getCookie } from 'cookies-next'
+import { getCookie } from '~/utils/cookie'
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL, // Gunakan .env
@@ -21,32 +21,26 @@ const api = axios.create({
 
 // Request Interceptor
 api.interceptors.request.use(
-  (config) => {
-    if (config.data) {
-      const encryptedData = encrypt(JSON.stringify(config.data))
-
-      if (encryptedData.error) return Promise.reject(encryptedData.error)
-
-      const timestamp = createTimestamp()
-      const salt = createSalt()
-      const payload = createPayload(timestamp, salt, config.data)
-      const signature = createSignature(payload)
-
-      config.data = encryptedData.data
-
-      config.headers['X-TIMESTAMP'] = timestamp
-      config.headers['X-SALT'] = salt
-      config.headers['X-SIGNATURE'] = signature
-
-      const token = getCookie('access_token')?.toString()
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-      }
-
-      return config
+  async (config) => {
+    if (!config.data) {
+      config.data = {}
     }
+    const encryptedData = encrypt(JSON.stringify(config.data))
+    if (encryptedData.error) return Promise.reject(encryptedData.error)
 
-    const token = getCookie('access_token')?.toString()
+    config.data = encryptedData.data
+
+    const timestamp = createTimestamp()
+    const salt = createSalt()
+    const payload = createPayload(timestamp, salt, config.data)
+    const signature = createSignature(payload)
+
+    config.headers['X-TIMESTAMP'] = timestamp
+    config.headers['X-SALT'] = salt
+    config.headers['X-SIGNATURE'] = signature
+
+    const token = await getCookie('access_token')
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -72,12 +66,7 @@ api.interceptors.response.use(
       },
     }
   },
-  (error) => {
-    if (error.response?.status === 401) {
-      console.error('Unauthorized! Redirecting...')
-    }
-    return Promise.reject(error)
-  },
+  (error) => Promise.reject(error),
 )
 
 export default api

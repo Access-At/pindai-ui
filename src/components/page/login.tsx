@@ -16,7 +16,7 @@ import { authSchema } from '~/zodSchema/authSchema'
 import { authenticateUser } from '~/api/request/auth-request'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
-import { setCookie } from 'cookies-next'
+import { getCookieDecrypted, setCookie } from '~/utils/cookie'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -31,10 +31,13 @@ export default function LoginForm() {
   const onSubmit = async (data: z.infer<typeof authSchema>) => {
     await authenticateUser(data)
       .then(async (res) => {
-        setCookie('access_token', res.data.access_token)
+        // console.log(res)
+        await setCookie('access_token', res.data.access_token)
+        await setCookie('user', res.data.user)
+        const user = await getCookieDecrypted('user')
         toast.success(res.message, {})
 
-        return router.push(`/dashboard`)
+        return router.push(`/dashboard/${user?.role}`)
       })
       .catch((err) => {
         toast.error(err.response.data.message)

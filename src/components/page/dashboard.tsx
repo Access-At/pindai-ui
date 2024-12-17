@@ -3,7 +3,6 @@ import StatusBadge from '~/components/status-badge'
 import { Card, CardHeader, CardContent } from '~/components/ui/card'
 import EachUtil from '~/utils/each-util'
 import { ActionCard, DashboardCard } from '../cards'
-import { fetchUser } from '~/api/request/user-request'
 
 interface DashboardProps {
   title: string
@@ -21,6 +20,7 @@ interface DashboardProps {
     message: string
     totalDosen: number
   }[]
+  role: string
 }
 
 export default async function Dashboard({
@@ -28,8 +28,8 @@ export default async function Dashboard({
   infoData,
   penelitianData,
   pengabdianData,
+  role,
 }: DashboardProps) {
-  const user = await fetchUser()
   return (
     <div className="flex flex-col gap-4">
       <h1 className="capitalize font-semibold text-muted-foreground">
@@ -69,23 +69,19 @@ export default async function Dashboard({
       </div>
 
       <DashboardCard
-        title={`dasbor ${user?.role === 'dosen' ? 'dosen' : user?.role === 'kaprodi' ? 'prodi' : ''}`}
+        title={`dasbor ${role === 'dosen' ? 'dosen' : role === 'kaprodi' ? 'prodi' : ''}`}
         description="Anda dapat melakukan penelitian dan pengabdian kepada masyarakat."
       />
 
       <div className="flex items-center justify-center gap-4">
-        <ActionCard title="penelitian" role={user?.role} />
-        <ActionCard title="pengabdian" role={user?.role} />
+        <ActionCard title="penelitian" role={role} />
+        <ActionCard title="pengabdian" role={role} />
       </div>
 
       <div className="flex items-start justify-center gap-4">
+        <InformationCard role={role} title="informasi dosen" data={infoData} />
         <InformationCard
-          role={user?.role}
-          title="informasi dosen"
-          data={infoData}
-        />
-        <InformationCard
-          role={user?.role}
+          role={role}
           title="ulasan terakhir"
           data={[{ label: 'penelitian' }, { label: 'pengabdian' }]}
         />

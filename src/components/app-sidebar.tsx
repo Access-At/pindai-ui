@@ -1,11 +1,10 @@
 'use client'
-import { HomeIcon, LayersIcon } from 'lucide-react'
-import { buttonVariants } from './ui/button'
+import { ArchiveIcon, ChevronDown } from 'lucide-react'
+import { Button } from './ui/button'
 import {
   Sidebar,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
@@ -13,26 +12,20 @@ import {
 } from './ui/sidebar'
 import Image from 'next/image'
 import { Separator } from './ui/separator'
-import Link from 'next/link'
-import { cn } from '~/lib/utils'
 import EachUtil from '../utils/each-util'
 import { usePathname } from 'next/navigation'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from './ui/collapsible'
+import { navigationData } from '~/constant/navigation-menu'
+import { MenuItem, GroupContent } from './menu'
 
-const mainMenu = [
-  {
-    name: 'penelitian',
-  },
-  {
-    name: 'pengabdian',
-  },
-  {
-    name: 'publikasi',
-  },
-]
-
-export default function AppSidebar({ role }: { role?: string }) {
+export default function AppSidebar({ role }: { role: string }) {
   const pathname = usePathname()
   const isActivePage = (path: string) => path === pathname
+
   return (
     <Sidebar variant="inset" className="p-0">
       <SidebarHeader className="flex flex-row items-center py-5 px-6">
@@ -41,73 +34,29 @@ export default function AppSidebar({ role }: { role?: string }) {
       </SidebarHeader>
       <SidebarContent className="my-2 space-y-2 p-0">
         <SidebarMenu className="space-y-2 w-full">
-          <Link href="/dashboard/${role}" className="px-6 relative">
-            <SidebarMenuItem
-              className={cn(
-                buttonVariants({ variant: 'ghost' }),
-                'gap-2 w-full justify-start hover:bg-primary/30 hover:text-primary',
-                isActivePage('/dashboard/${role}')
-                  ? 'bg-primary/30 text-primary hover:text-primary-foreground hover:bg-primary'
-                  : '',
-              )}
-            >
-              <HomeIcon />
-              <span>Dashboard</span>
-            </SidebarMenuItem>
-            <div
-              className={cn(
-                isActivePage('/dashboard/${role}')
-                  ? 'absolute right-0 top-0 h-full w-[2px] bg-primary bg-[length:1px_100%] rounded-full'
-                  : '',
-              )}
-            />
-          </Link>
+          <MenuItem
+            href={`/dashboard/${role}`}
+            name="dashboard"
+            isActive={isActivePage(`/dashboard/${role}`)}
+          />
         </SidebarMenu>
-        {role === 'kaprodi' || role === 'dppm' ? (
+        {(role === 'kaprodi' || role === 'dppm') && (
           <SidebarGroup className="px-0">
             <div className="flex items-center">
               <Separator className="w-[1rem] bg-black" />
               <SidebarGroupLabel className="uppercase">
-                Main Menu
+                Management Data
               </SidebarGroupLabel>
             </div>
             <SidebarGroupContent>
-              <SidebarMenu className="px-6">
-                <EachUtil
-                  of={mainMenu}
-                  render={({ name }, index) => (
-                    <Link
-                      href={`/dashboard/${role}/${name}`}
-                      className={cn('relative px-6')}
-                      key={index}
-                    >
-                      <SidebarMenuItem
-                        className={cn(
-                          buttonVariants({ variant: 'ghost' }),
-                          'gap-2 w-full justify-start hover:bg-primary/30 hover:text-primary',
-                          isActivePage(`/dashboard/${role}/${name}`)
-                            ? 'bg-primary/30 text-primary hover:text-primary-foreground hover:bg-primary'
-                            : '',
-                        )}
-                      >
-                        <LayersIcon />
-                        <span className="capitalize">{name}</span>
-                      </SidebarMenuItem>
-
-                      <div
-                        className={cn(
-                          isActivePage(`/dashboard/${role}/${name}`)
-                            ? 'absolute right-0 top-0 h-full w-[2px] bg-primary bg-[length:1px_100%] rounded-full'
-                            : '',
-                        )}
-                      />
-                    </Link>
-                  )}
-                />
-              </SidebarMenu>
+              <GroupContent
+                data={navigationData.management}
+                role={role}
+                isActivePage={isActivePage}
+              />
             </SidebarGroupContent>
           </SidebarGroup>
-        ) : null}
+        )}
         <SidebarGroup className="px-0 space-y-2">
           <div className="flex items-center">
             <Separator className="w-[1rem] bg-black" />
@@ -115,39 +64,50 @@ export default function AppSidebar({ role }: { role?: string }) {
               Main Menu
             </SidebarGroupLabel>
           </div>
-          <SidebarMenu className="space-y-2 w-full">
-            <EachUtil
-              of={mainMenu}
-              render={({ name }, index) => (
-                <Link
-                  href={`/dashboard/${role}/${name}`}
-                  className={cn('relative px-6')}
-                  key={index}
-                >
-                  <SidebarMenuItem
-                    className={cn(
-                      buttonVariants({ variant: 'ghost' }),
-                      'gap-2 w-full justify-start hover:bg-primary/30 hover:text-primary',
-                      isActivePage(`/dashboard/${role}/${name}`)
-                        ? 'bg-primary/30 text-primary hover:text-primary-foreground hover:bg-primary'
-                        : '',
-                    )}
-                  >
-                    <LayersIcon />
-                    <span className="capitalize">{name}</span>
-                  </SidebarMenuItem>
-
-                  <div
-                    className={cn(
-                      isActivePage(`/dashboard/${role}/${name}`)
-                        ? 'absolute right-0 top-0 h-full w-[2px] bg-primary bg-[length:1px_100%] rounded-full'
-                        : '',
-                    )}
-                  />
-                </Link>
-              )}
+          <SidebarGroupContent className="space-y-1">
+            <GroupContent
+              data={navigationData.main}
+              role={role}
+              isActivePage={isActivePage}
             />
-          </SidebarMenu>
+            <EachUtil
+              of={navigationData.sub}
+              render={(item, index) =>
+                item.roles.includes(role) && (
+                  <Collapsible
+                    defaultOpen
+                    className="group/collapsible"
+                    key={index}
+                  >
+                    <SidebarGroup className="p-0 px-6">
+                      <CollapsibleTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className="group-data-[state=open]/collapsible:bg-primary/30 group-data-[state=open]/collapsible:text-primary hover:bg-primary/30 hover:text-primary text-sm capitalize"
+                        >
+                          <ArchiveIcon />
+                          {item.name}
+                          <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                        </Button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="mt-2">
+                        <SidebarGroupContent>
+                          <GroupContent
+                            data={item.mainMenu.map((name: string) => ({
+                              name,
+                              roles: [role],
+                            }))}
+                            role={role}
+                            isActivePage={isActivePage}
+                          />
+                        </SidebarGroupContent>
+                      </CollapsibleContent>
+                    </SidebarGroup>
+                  </Collapsible>
+                )
+              }
+            />
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
