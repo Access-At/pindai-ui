@@ -1,6 +1,5 @@
-'use client'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { redirect } from 'next/navigation'
+import { fetchUser } from '~/api/response/user-response'
 import AppSidebar from '~/components/app-sidebar'
 import ProfileButton from '~/components/profile-button'
 import {
@@ -8,21 +7,17 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '~/components/ui/sidebar'
-import { getUser } from '~/utils/get-user'
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const router = useRouter()
-  const user = getUser()
+  const user = await fetchUser()
 
-  useEffect(() => {
-    if (!user?.role) {
-      return router.push('/dashboard')
-    }
-  }, [router, user])
+  if (!user?.role) {
+    return redirect('/dashboard')
+  }
   return (
     <SidebarProvider>
       <AppSidebar role={user?.role} />

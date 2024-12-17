@@ -1,23 +1,13 @@
-'use client'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { hasCookie } from '~/lib/cookie'
-import { getUser } from '~/utils/get-user'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { fetchUser } from '~/api/request/user-request'
 
-export default function Dashboard() {
-  const router = useRouter()
-  const isLogin = hasCookie('access_token')
-  const user = getUser()
-
-  useEffect(() => {
-    if (!isLogin) {
-      return router.push('/login-first')
-    }
-
-    if (user?.role) {
-      router.replace(`/dashboard/${user.role}`)
-    } else {
-      router.replace('/')
-    }
-  }, [isLogin, router, user])
+export default async function Dashboard() {
+  const cookie = await cookies()
+  const isLogin = cookie.has('access_token')
+  if (!isLogin) {
+    return redirect('/')
+  }
+  await fetchUser()
+  // console.log(user)
 }

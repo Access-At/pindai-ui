@@ -2,7 +2,8 @@ import { AuthSchema } from '~/zodSchema/authSchema'
 import api from '../configApi'
 
 export async function authenticateUser(data: AuthSchema) {
-  return await api.post('/auth/login', data)
+  const request = await api.post('/auth/login', data)
+  return request.data
 }
 
 // export async function registerUser(data: AuthSchema) {
@@ -10,5 +11,6 @@ export async function authenticateUser(data: AuthSchema) {
 // }
 
 export async function logoutUser() {
-  return await api.post('/auth/logout', {})
+  const request = await api.post('/auth/logout', {})
+  return request.data
 }

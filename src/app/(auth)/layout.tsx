@@ -1,21 +1,17 @@
-'use client'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { hasCookie } from '~/lib/cookie'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 
-export default function Layout({
+export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const router = useRouter()
-  const isLogin = hasCookie('access_token')
+  const cookie = await cookies()
+  const isLogin = cookie.has('access_token')
 
-  useEffect(() => {
-    if (isLogin) {
-      return router.push('/dashboard')
-    }
-  }, [isLogin, router])
+  if (isLogin) {
+    return redirect('/dashboard')
+  }
 
   return (
     <main className="flex min-h-screen bg-primary/5 items-center justify-center">

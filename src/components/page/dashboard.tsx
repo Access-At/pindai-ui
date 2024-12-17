@@ -1,10 +1,9 @@
-'use client'
 import { InformationCard } from '~/components/information'
 import StatusBadge from '~/components/status-badge'
 import { Card, CardHeader, CardContent } from '~/components/ui/card'
 import EachUtil from '~/utils/each-util'
 import { ActionCard, DashboardCard } from '../cards'
-import { getUser } from '~/utils/get-user'
+import { fetchUser } from '~/api/request/user-request'
 
 interface DashboardProps {
   title: string
@@ -24,13 +23,13 @@ interface DashboardProps {
   }[]
 }
 
-export default function Dashboard({
+export default async function Dashboard({
   title,
   infoData,
   penelitianData,
   pengabdianData,
 }: DashboardProps) {
-  const user = getUser()
+  const user = await fetchUser()
   return (
     <div className="flex flex-col gap-4">
       <h1 className="capitalize font-semibold text-muted-foreground">

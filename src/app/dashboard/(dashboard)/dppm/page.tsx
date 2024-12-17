@@ -1,15 +1,14 @@
-'use client'
 import { EllipsisVerticalIcon } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '~/components/ui/card'
 import { Fakultas, fakultas } from '~/dummy'
 import EachUtil from '~/utils/each-util'
 import { Badge } from '~/components/ui/badge'
 import { ActionCard } from '~/components/cards'
-import { getUser } from '~/utils/get-user'
 import { InformationCard } from '~/components/information'
+import { fetchUser } from '~/api/response/user-response'
 
-export default function DashboardDppm() {
-  const user = getUser()
+export default async function DashboardDppm() {
+  const user = await fetchUser()
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-xl text-muted-foreground capitalize">

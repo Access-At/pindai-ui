@@ -1,6 +1,12 @@
-import { AuthSchema } from '~/zodSchema/authSchema'
-import api from '../configApi'
+import api from '~/api/configApi'
 
-export async function getUser(data: AuthSchema) {
-  return await api.post('/auth/login', data)
+export async function fetchUser() {
+  const request = await api.get('/')
+  console.log(request.data)
+  return request.data
+}
+
+export async function deleteUserData() {
+  const request = await api.delete('/user')
+  return request.data
 }
