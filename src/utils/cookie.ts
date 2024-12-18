@@ -20,8 +20,8 @@ export async function getCookie(key: string) {
 
 export async function getCookieDecrypted(key: string) {
   const cookie = await cookies()
-  const value = cookie.get(key)?.value as string
-  return JSON.parse(decrypt(value).data as string)
+  const value = cookie.get(key)?.value
+  return value ? JSON.parse(decrypt(value).data as string) : ''
 }
 
 export async function removeCookie(key: string) {

@@ -32,7 +32,7 @@ export default function AppSidebar({ role }: { role: string }) {
         <Image src="/logo.svg" width={25} height={42} alt="Pindai Logo" />
         <span className="font-bold lowercase text-2xl">Pindai</span>
       </SidebarHeader>
-      <SidebarContent className="my-2 space-y-2 p-0">
+      <SidebarContent className="space-y-2 p-0">
         <SidebarMenu className="space-y-2 w-full">
           <MenuItem
             href={`/dashboard/${role}`}
@@ -94,6 +94,7 @@ export default function AppSidebar({ role }: { role: string }) {
                         <SidebarGroupContent>
                           <GroupContent
                             data={item.mainMenu.map((name: string) => ({
+                              list: item.name,
                               name,
                               roles: [role],
                             }))}

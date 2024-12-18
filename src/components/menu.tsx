@@ -9,20 +9,29 @@ import { SelectedMenu } from '~/constant/navigation-menu'
 export const MenuItem = ({
   href,
   name,
+  list,
   isActive,
 }: {
   href: string
+  list?: string
   name: string
   isActive: boolean
 }) => (
-  <Link href={href} className="relative px-6">
+  <Link
+    href={href}
+    className={cn('relative', {
+      'pl-6': list,
+      'px-6': !list,
+    })}
+  >
     <SidebarMenuItem
       className={cn(
         buttonVariants({ variant: 'ghost' }),
         'gap-2 w-full justify-start hover:bg-primary/30 hover:text-primary',
-        isActive
-          ? 'bg-primary/30 text-primary hover:text-primary-foreground hover:bg-primary'
-          : '',
+        {
+          'bg-primary/30 text-primary hover:text-primary-foreground hover:bg-primary':
+            isActive,
+        },
       )}
     >
       {name === 'dashboard' ? <HomeIcon /> : <LayersIcon />}
@@ -50,9 +59,18 @@ export const GroupContent = ({
         item.roles.includes(role) && (
           <MenuItem
             key={index}
-            href={`/dashboard/${role}/${item.name}`}
+            href={
+              item.list
+                ? `/dashboard/${role}/${item.list.split(' ')[0]}/${item.name}`
+                : `/dashboard/${role}/${item.name}`
+            }
+            list={item.list}
             name={item.name}
-            isActive={isActivePage(`/dashboard/${role}/${item.name}`)}
+            isActive={isActivePage(
+              item.list
+                ? `/dashboard/${role}/${item.list.split(' ')[0]}/${item.name}`
+                : `/dashboard/${role}/${item.name}`,
+            )}
           />
         )
       }
