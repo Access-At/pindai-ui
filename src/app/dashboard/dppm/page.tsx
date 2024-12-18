@@ -1,6 +1,6 @@
 import { EllipsisVerticalIcon } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '~/components/ui/card'
-import { Fakultas, fakultas } from '~/dummy'
+import { Fakultas } from '~/dummy'
 import EachUtil from '~/utils/each-util'
 import { Badge } from '~/components/ui/badge'
 import { ActionCard } from '~/components/cards'
@@ -8,9 +8,11 @@ import { InformationCard } from '~/components/information'
 import { redirect, RedirectType } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { getCookieDecrypted } from '~/utils/cookie'
+import { fetchDashboard } from '~/api/request/dppm-request'
 
 export default async function DashboardDppm() {
   const user = await getCookieDecrypted('user')
+  const { fakultas } = await fetchDashboard()
   const cookie = await cookies()
   const isLogin = cookie.has('access_token')
   if (!isLogin) {
@@ -39,7 +41,7 @@ export default async function DashboardDppm() {
               <CardContent className="flex flex-col items-start gap-4 text-muted-foreground">
                 <h1 className="text-lg leading-none capitalize">{item.name}</h1>
                 <p className="flex items-start gap-2 capitalize">
-                  <span className="text-2xl">{item.jumlahDosen}</span> dosen
+                  <span className="text-2xl">{item.dosen_count}</span> dosen
                 </p>
               </CardContent>
             </Card>

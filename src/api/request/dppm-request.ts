@@ -1,8 +1,12 @@
 import { FakultasType } from '~/zodSchema/dppm/fakultas'
 import api from '../configApi'
 
-export async function fetchFakultas() {
-  const request = await api.get('/fakultas')
+export async function fetchDashboard() {
+  const request = await api.get('/dashboard')
+  return request.data.data
+}
+export async function fetchFakultas(page: number) {
+  const request = await api.get(`/fakultas/?page=${page}`)
   return request.data.data
 }
 

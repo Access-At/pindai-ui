@@ -22,17 +22,17 @@ const api = axios.create({
 // Request Interceptor
 api.interceptors.request.use(
   async (config) => {
-    if (!config.data) {
-      config.data = {}
+    if (config.method?.toUpperCase() === 'GET') {
+      delete config.data
+    } else {
+      const encryptedData = encrypt(JSON.stringify(config.data))
+      if (encryptedData.error) return Promise.reject(encryptedData.error)
+      config.data = encryptedData.data
     }
-    const encryptedData = encrypt(JSON.stringify(config.data))
-    if (encryptedData.error) return Promise.reject(encryptedData.error)
-
-    config.data = encryptedData.data
 
     const timestamp = createTimestamp()
     const salt = createSalt()
-    const payload = createPayload(timestamp, salt, config.data)
+    const payload = createPayload(timestamp, salt, config.data || '')
     const signature = createSignature(payload)
 
     config.headers['X-TIMESTAMP'] = timestamp

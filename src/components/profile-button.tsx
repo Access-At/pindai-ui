@@ -30,7 +30,7 @@ export default function ProfileButton({
       .then(async (res) => {
         toast.success(res.message, {})
         await removeCookie('access_token')
-        await removeCookie('role')
+        await removeCookie('user')
         return router.push('/')
       })
       .catch((err) => {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import { Card, CardContent, CardHeader } from '~/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader } from '~/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -31,7 +31,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '~/components/ui/tooltip'
-import { addFakultas, updateFakultas } from '~/api/request/dppm-request'
+import {
+  addFakultas,
+  fetchFakultas,
+  updateFakultas,
+} from '~/api/request/dppm-request'
 
 import { Button } from '~/components/ui/button'
 import EachUtil from '~/utils/each-util'
@@ -39,9 +43,18 @@ import { Input } from '~/components/ui/input'
 import { fakultasSchema } from '~/zodSchema/dppm/fakultas'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '~/components/ui/pagination'
 
 function FakultasForm({
   initialData,
@@ -50,6 +63,7 @@ function FakultasForm({
   initialData?: any
   onClose: () => void
 }) {
+  const router = useRouter()
   const form = useForm<z.infer<typeof fakultasSchema>>({
     resolver: zodResolver(fakultasSchema),
     defaultValues: {
@@ -68,6 +82,7 @@ function FakultasForm({
         form.reset()
       }
       onClose() // Close the dialog after successful submission
+      router.refresh()
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Terjadi kesalahan')
     }
@@ -156,17 +171,54 @@ function FakultasRow({ item, index }: { item: any; index: number }) {
   )
 }
 
-export default function Fakultas({ data }: { data: any }) {
-  //   const [open, setOpen] = useAtom(dialogFakultas)
+interface Faculty {
+  id: string
+  name: string
+}
+
+interface Meta {
+  current_page: number
+  from: number
+  last_page: number
+  path: string
+  per_page: number
+  to: number
+  total: number
+}
+
+interface FacultyResponse {
+  fakultas: Faculty[]
+  meta: Meta
+}
+export default function Fakultas() {
+  const [currentPage, setCurrentPage] = useState(1)
+  const [data, setData] = useState<FacultyResponse>()
   const [open, setOpen] = useState(false)
 
   const handleClose = () => {
     setOpen(false) // Close the dialog
   }
 
+  const fetchFaculties = async (page: number) => {
+    try {
+      const response = await fetchFakultas(page)
+      setData(response)
+    } catch (error) {
+      console.error('Error fetching faculties:', error)
+      toast.error('Failed to fetch faculties. Please try again.')
+    }
+  }
+
+  useEffect(() => {
+    fetchFaculties(currentPage)
+  }, [currentPage])
+
   return (
     <Card>
       <CardHeader className="text-center font-bold text-lg md:text-xl xl:text-2xl py-8 px-6">
+        <Button onClick={async () => await fetchFaculties(currentPage)}>
+          fetch
+        </Button>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="size-fit capitalize">tambah fakultas</Button>
@@ -190,14 +242,56 @@ export default function Fakultas({ data }: { data: any }) {
           </TableHeader>
           <TableBody>
             <EachUtil
-              of={data.fakultas}
+              of={data?.fakultas || []}
               render={(item, index) => (
-                <FakultasRow item={item} key={index} index={index} />
+                <FakultasRow item={item} key={item.id} index={index} />
               )}
             />
           </TableBody>
         </Table>
       </CardContent>
+      <CardFooter>
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                className={
+                  currentPage === 1 ? 'pointer-events-none opacity-50' : ''
+                }
+              />
+            </PaginationItem>
+            {data?.meta.last_page &&
+              Array.from({ length: data.meta.last_page }).map((_, i) => (
+                <PaginationItem key={i + 1}>
+                  <PaginationLink
+                    href="#"
+                    onClick={() => setCurrentPage(i + 1)}
+                    isActive={currentPage === i + 1}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={() =>
+                  setCurrentPage((prev) =>
+                    prev < (data?.meta.last_page || 1) ? prev + 1 : prev,
+                  )
+                }
+                className={
+                  currentPage === data?.meta.last_page
+                    ? 'pointer-events-none opacity-50'
+                    : ''
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </CardFooter>
     </Card>
   )
 }
