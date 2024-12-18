@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { EditIcon, TrashIcon } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import { z } from 'zod'
-import { addFakultas, updateFakultas } from '~/api/request/dppm-request'
-import { Button } from '~/components/ui/button'
+
 import { Card, CardContent, CardHeader } from '~/components/ui/card'
 import {
   Dialog,
@@ -14,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '~/components/ui/dialog'
+import { EditIcon, TrashIcon } from 'lucide-react'
 import {
   Form,
   FormControl,
@@ -22,7 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from '~/components/ui/form'
-import { Input } from '~/components/ui/input'
 import {
   Table,
   TableBody,
@@ -37,42 +31,48 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '~/components/ui/tooltip'
-import EachUtil from '~/utils/each-util'
-import { fakultasSchema } from '~/zodSchema/dppm/fakultas'
-import { useAtom, useSetAtom } from 'jotai'
-import { dialogFakultas } from '~/management/state'
+import { addFakultas, updateFakultas } from '~/api/request/dppm-request'
 
-function FakultasForm({ initialData }: { initialData?: any }) {
-  const setDialogFakultas = useSetAtom(dialogFakultas)
+import { Button } from '~/components/ui/button'
+import EachUtil from '~/utils/each-util'
+import { Input } from '~/components/ui/input'
+import { fakultasSchema } from '~/zodSchema/dppm/fakultas'
+import { toast } from 'sonner'
+import { useForm } from 'react-hook-form'
+import { useState } from 'react'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+function FakultasForm({
+  initialData,
+  onClose,
+}: {
+  initialData?: any
+  onClose: () => void
+}) {
   const form = useForm<z.infer<typeof fakultasSchema>>({
     resolver: zodResolver(fakultasSchema),
     defaultValues: {
-      name: initialData.name || '',
+      name: initialData?.name || '',
     },
   })
 
   const onSubmit = async (data: z.infer<typeof fakultasSchema>) => {
-    if (initialData) {
-      await updateFakultas(initialData.id, data)
-        .then((res) => {
-          toast.success(res.message, {})
-          setDialogFakultas(false)
-        })
-        .catch((err) => {
-          toast.error(err.response.data.message)
-        })
-    } else {
-      await addFakultas(data)
-        .then((res) => {
-          toast.success(res.message, {})
-          form.reset()
-          setDialogFakultas(false)
-        })
-        .catch((err) => {
-          toast.error(err.response.data.message)
-        })
+    try {
+      if (initialData) {
+        const res = await updateFakultas(initialData.id, data)
+        toast.success(res.message)
+      } else {
+        const res = await addFakultas(data)
+        toast.success(res.message)
+        form.reset()
+      }
+      onClose() // Close the dialog after successful submission
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Terjadi kesalahan')
     }
   }
+
   return (
     <Form {...form}>
       <form
@@ -86,7 +86,7 @@ function FakultasForm({ initialData }: { initialData?: any }) {
             <FormItem>
               <FormLabel className="capitalize">nama fakultas</FormLabel>
               <FormControl>
-                <Input type="name" autoComplete="name" {...field} />
+                <Input type="text" autoComplete="name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -101,17 +101,13 @@ function FakultasForm({ initialData }: { initialData?: any }) {
   )
 }
 
-function FakultasRow({
-  item,
-  index,
-  open,
-  setOpen,
-}: {
-  item: any
-  index: number
-  open: boolean
-  setOpen: any
-}) {
+function FakultasRow({ item, index }: { item: any; index: number }) {
+  const [open, setOpen] = useState(false)
+
+  const handleClose = () => {
+    setOpen(false) // Close the dialog
+  }
+
   return (
     <TableRow>
       <TableCell>{index + 1}</TableCell>
@@ -133,7 +129,7 @@ function FakultasRow({
                   <DialogTitle className="text-center capitalize">
                     edit fakultas
                   </DialogTitle>
-                  <FakultasForm initialData={item} />
+                  <FakultasForm initialData={item} onClose={handleClose} />
                 </DialogContent>
               </Dialog>
             </TooltipTrigger>
@@ -161,7 +157,13 @@ function FakultasRow({
 }
 
 export default function Fakultas({ data }: { data: any }) {
-  const [open, setOpen] = useAtom(dialogFakultas)
+  //   const [open, setOpen] = useAtom(dialogFakultas)
+  const [open, setOpen] = useState(false)
+
+  const handleClose = () => {
+    setOpen(false) // Close the dialog
+  }
+
   return (
     <Card>
       <CardHeader className="text-center font-bold text-lg md:text-xl xl:text-2xl py-8 px-6">
@@ -173,7 +175,7 @@ export default function Fakultas({ data }: { data: any }) {
             <DialogTitle className="text-center capitalize">
               tambah fakultas
             </DialogTitle>
-            <FakultasForm initialData="" />
+            <FakultasForm initialData={null} onClose={handleClose} />
           </DialogContent>
         </Dialog>
       </CardHeader>
@@ -190,13 +192,7 @@ export default function Fakultas({ data }: { data: any }) {
             <EachUtil
               of={data.fakultas}
               render={(item, index) => (
-                <FakultasRow
-                  item={item}
-                  key={index}
-                  index={index}
-                  open={open}
-                  setOpen={setOpen}
-                />
+                <FakultasRow item={item} key={index} index={index} />
               )}
             />
           </TableBody>
