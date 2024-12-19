@@ -8,11 +8,11 @@ import { InformationCard } from '~/components/information'
 import { redirect, RedirectType } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { getCookieDecrypted } from '~/utils/cookie'
-import { fetchDashboard } from '~/api/request/dppm-request'
+import { fetchDashboardDppm } from '~/api/request/dppm-request'
 
 export default async function DashboardDppm() {
   const user = await getCookieDecrypted('user')
-  const { fakultas } = await fetchDashboard()
+  const { fakultas } = await fetchDashboardDppm()
   const cookie = await cookies()
   const isLogin = cookie.has('access_token')
   if (!isLogin) {

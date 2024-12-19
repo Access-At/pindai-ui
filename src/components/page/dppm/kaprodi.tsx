@@ -2,21 +2,7 @@
 'use client'
 
 import { Card, CardContent, CardFooter, CardHeader } from '~/components/ui/card'
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from '~/components/ui/dialog'
-import { EditIcon, LoaderCircleIcon, TrashIcon } from 'lucide-react'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '~/components/ui/form'
+import { EditIcon, TrashIcon } from 'lucide-react'
 import {
   Pagination,
   PaginationContent,
@@ -39,23 +25,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '~/components/ui/tooltip'
-import {
-  addFakultas,
-  deleteFakultas,
-  fetchFakultas,
-  updateFakultas,
-} from '~/api/request/dppm-request'
+// import {
+//   addFakultas,
+//   deleteFakultas,
+//   fetchFakultas,
+//   updateFakultas,
+// } from '~/api/request/dppm-request'
 import { useEffect, useState } from 'react'
 
-import { Button } from '~/components/ui/button'
+import { Button, buttonVariants } from '~/components/ui/button'
 import EachUtil from '~/utils/each-util'
-import { Input } from '~/components/ui/input'
-import { fakultasSchema } from '~/zodSchema/dppm/fakultas'
 import { toast } from 'sonner'
-import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -65,76 +46,32 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '~/components/ui/alert-dialog'
+import { deleteKaprodiDppm, fetchKaprodiDppm } from '~/api/request/dppm-request'
+import Link from 'next/link'
+import { cn } from '~/lib/utils'
 
-function FakultasForm({
-  initialData,
-  label,
-  onClose,
-}: {
-  initialData?: any
-  label: string
-  onClose: () => void
-}) {
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const form = useForm<z.infer<typeof fakultasSchema>>({
-    resolver: zodResolver(fakultasSchema),
-    defaultValues: {
-      name: initialData?.name || '',
-    },
-  })
-
-  const onSubmit = async (data: z.infer<typeof fakultasSchema>) => {
-    try {
-      setLoading(true)
-      if (initialData) {
-        await updateFakultas(initialData.id, data).then((res) => {
-          toast.success(res.message)
-        })
-      } else {
-        await addFakultas(data).then((res) => {
-          toast.success(res.message)
-          form.reset()
-        })
-      }
-      setLoading(false)
-      onClose() // Close the dialog after successful submission
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Terjadi kesalahan')
-    }
-
-    router.refresh()
-  }
-
-  return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col w-full gap-2"
-      >
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="capitalize">nama {label}</FormLabel>
-              <FormControl>
-                <Input type="text" autoComplete="name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Button type="submit" className="capitalize" disabled={loading}>
-          simpan {loading && <LoaderCircleIcon className="animate-spin" />}
-        </Button>
-      </form>
-    </Form>
-  )
+interface Kaprodi {
+  id: string
+  name: string
+  fakultas: string
 }
 
-function FakultasRow({
+interface Meta {
+  current_page: number
+  from: number
+  last_page: number
+  path: string
+  per_page: number
+  to: number
+  total: number
+}
+
+interface KaprodiResponse {
+  kaprodi: Kaprodi[]
+  meta: Meta
+}
+
+function KaprodiRow({
   item,
   index,
   label,
@@ -144,15 +81,10 @@ function FakultasRow({
   label: string
 }) {
   const router = useRouter()
-  const [open, setOpen] = useState(false)
   const [alertOpen, setAlertOpen] = useState(false)
 
-  const handleClose = () => {
-    setOpen(false) // Close the dialog
-  }
-
   const onDelete = async () => {
-    await deleteFakultas(item.id)
+    await deleteKaprodiDppm(item.id)
       .then((res) => {
         toast.success(res.message)
         router.refresh()
@@ -166,30 +98,20 @@ function FakultasRow({
     <TableRow>
       <TableCell>{index + 1}</TableCell>
       <TableCell className="capitalize">{item.name}</TableCell>
+      <TableCell className="capitalize">{item.fakultas}</TableCell>
       <TableCell className="flex gap-2">
         <TooltipProvider delayDuration={3} disableHoverableContent>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                  <Button
-                    size="icon"
-                    className="bg-cyan-500/30 text-cyan-500 hover:bg-cyan-500 hover:text-primary-foreground"
-                  >
-                    <EditIcon />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogTitle className="text-center capitalize">
-                    edit {label}
-                  </DialogTitle>
-                  <FakultasForm
-                    initialData={item}
-                    onClose={handleClose}
-                    label={label}
-                  />
-                </DialogContent>
-              </Dialog>
+              <Link
+                href={`/dashboard/dppm/kaprodi/edit/${item.id}`}
+                className={cn(
+                  buttonVariants({ variant: 'default', size: 'icon' }),
+                  'bg-cyan-500/30 text-cyan-500 hover:bg-cyan-500 hover:text-primary-foreground',
+                )}
+              >
+                <EditIcon />
+              </Link>
             </TooltipTrigger>
             <TooltipContent className="uppercase bg-black text-sm font-medium">
               edit
@@ -234,85 +156,56 @@ function FakultasRow({
   )
 }
 
-interface Faculty {
-  id: string
-  name: string
-}
-
-interface Meta {
-  current_page: number
-  from: number
-  last_page: number
-  path: string
-  per_page: number
-  to: number
-  total: number
-}
-
-interface FacultyResponse {
-  fakultas: Faculty[]
-  meta: Meta
-}
-export default function Fakultas() {
+export default function Kaprodi() {
   const [currentPage, setCurrentPage] = useState(1)
-  const [data, setData] = useState<FacultyResponse>()
-  const [open, setOpen] = useState(false)
+  const [data, setData] = useState<KaprodiResponse>()
 
-  const handleClose = () => {
-    setOpen(false) // Close the dialog
-  }
-
-  const fetchFaculties = async (page: number) => {
+  const fetchKaprodi = async (page: number) => {
     try {
-      const response = await fetchFakultas(page)
+      const response = await fetchKaprodiDppm(page)
       setData(response)
     } catch (error) {
-      console.error('Error fetching faculties:', error)
-      toast.error('Failed to fetch faculties. Please try again.')
+      console.error('Error fetching kaprodi:', error)
+      toast.error('Failed to fetch kaprodi. Please try again.')
     }
   }
 
   useEffect(() => {
-    fetchFaculties(currentPage)
+    fetchKaprodi(currentPage)
   }, [currentPage])
 
   return (
     <Card>
       <CardHeader className="text-center font-bold text-lg md:text-xl xl:text-2xl py-8 px-6">
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button className="size-fit capitalize">tambah fakultas</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogTitle className="text-center capitalize">
-              tambah fakultas
-            </DialogTitle>
-            <FakultasForm
-              initialData={null}
-              onClose={handleClose}
-              label="fakultas"
-            />
-          </DialogContent>
-        </Dialog>
+        <Link
+          href="/dashboard/dppm/kaprodi/tambah"
+          className={cn(
+            buttonVariants({ variant: 'default' }),
+            'size-fit capitalize',
+          )}
+        >
+          tambah kaprodi
+        </Link>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow className="text-center capitalize">
               <TableHead>no</TableHead>
-              <TableHead>nama fakultas</TableHead>
+              <TableHead>nama kaprodi</TableHead>
+              <TableHead>fakultas</TableHead>
               <TableHead>action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             <EachUtil
-              of={data?.fakultas || []}
+              of={data?.kaprodi || []}
               render={(item, index) => (
-                <FakultasRow
+                <KaprodiRow
                   item={item}
                   key={item.id}
                   index={index}
-                  label="fakultas"
+                  label="kaprodi"
                 />
               )}
             />

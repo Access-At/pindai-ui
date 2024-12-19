@@ -1,6 +1,6 @@
 import EncryptRequestResponse from '~/lib/EncryptRequestResponse'
 import axios from 'axios'
-import { getCookie } from '~/utils/cookie'
+import { getCookie, removeCookie } from '~/utils/cookie'
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL, // Gunakan .env
@@ -26,6 +26,18 @@ api.interceptors.request.use(
     }
 
     return config
+  },
+  (error) => Promise.reject(error),
+)
+
+api.interceptors.response.use(
+  (response) => {
+    if (response.status === 401) {
+      removeCookie('access_token')
+      removeCookie('user')
+    }
+
+    return response
   },
   (error) => Promise.reject(error),
 )
