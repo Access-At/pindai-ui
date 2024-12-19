@@ -1,5 +1,5 @@
 'use client'
-import { Button } from '~/components/ui/button'
+
 import {
   Form,
   FormControl,
@@ -8,15 +8,17 @@ import {
   FormLabel,
   FormMessage,
 } from '~/components/ui/form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { getCookieDecrypted, setCookie } from '~/utils/cookie'
+
+import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
-import { useForm } from 'react-hook-form'
 import { authSchema } from '~/zodSchema/authSchema'
 import { authenticateUser } from '~/api/request/auth-request'
 import { toast } from 'sonner'
+import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
-import { getCookieDecrypted, setCookie } from '~/utils/cookie'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -31,7 +33,6 @@ export default function LoginForm() {
   const onSubmit = async (data: z.infer<typeof authSchema>) => {
     await authenticateUser(data)
       .then(async (res) => {
-        // console.log(res)
         await setCookie('access_token', res.data.access_token)
         await setCookie('user', res.data.user)
         const user = await getCookieDecrypted('user')

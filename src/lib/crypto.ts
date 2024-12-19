@@ -23,7 +23,8 @@ class CryptoService {
   }
 
   private static encryptionKey: string =
-    process.env.NEXT_PUBLIC_SECURE_COMMUNICATION_KEY || ''
+    process.env.NEXT_PUBLIC_SECURE_DATA || ''
+
   private static secretKey: string =
     process.env.NEXT_PUBLIC_SECURE_API_KEY || ''
 
@@ -45,6 +46,7 @@ class CryptoService {
   public encrypt(data: any): CryptoResult {
     try {
       const iv = crypto.randomBytes(CryptoService.config.ivLength)
+
       const cipher = crypto.createCipheriv(
         CryptoService.config.algorithm,
         CryptoService.encryptionKey,
@@ -55,6 +57,7 @@ class CryptoService {
         cipher.update(data, 'utf8'),
         cipher.final(),
       ])
+
       const authTag = cipher.getAuthTag()
 
       const result = Buffer.concat([iv, authTag, encryptedData]).toString(
@@ -114,8 +117,13 @@ class CryptoService {
       .digest('hex')
   }
 
-  public createPayload(timestamp: number, salt: string, body: object): string {
-    return `${timestamp}${salt}${JSON.stringify(body)}`
+  public createPayload(
+    timestamp: number,
+    salt: string,
+    payload: string,
+  ): string {
+    console.log('createPayload', timestamp, salt, payload)
+    return `${timestamp}${salt}${payload}`
   }
 
   public createSalt(): string {

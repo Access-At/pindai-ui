@@ -18,6 +18,14 @@ import {
   FormMessage,
 } from '~/components/ui/form'
 import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '~/components/ui/pagination'
+import {
   Table,
   TableBody,
   TableCell,
@@ -36,6 +44,7 @@ import {
   fetchFakultas,
   updateFakultas,
 } from '~/api/request/dppm-request'
+import { useEffect, useState } from 'react'
 
 import { Button } from '~/components/ui/button'
 import EachUtil from '~/utils/each-util'
@@ -43,18 +52,9 @@ import { Input } from '~/components/ui/input'
 import { fakultasSchema } from '~/zodSchema/dppm/fakultas'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '~/components/ui/pagination'
 
 function FakultasForm({
   initialData,
@@ -203,6 +203,7 @@ export default function Fakultas() {
     try {
       const response = await fetchFakultas(page)
       setData(response)
+      console.log(response)
     } catch (error) {
       console.error('Error fetching faculties:', error)
       toast.error('Failed to fetch faculties. Please try again.')
@@ -216,7 +217,10 @@ export default function Fakultas() {
   return (
     <Card>
       <CardHeader className="text-center font-bold text-lg md:text-xl xl:text-2xl py-8 px-6">
-        <Button onClick={async () => await fetchFaculties(currentPage)}>
+        <Button
+          onClick={async () => await fetchFaculties(currentPage)}
+          type="button"
+        >
           fetch
         </Button>
         <Dialog open={open} onOpenChange={setOpen}>

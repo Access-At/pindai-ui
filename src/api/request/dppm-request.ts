@@ -5,8 +5,13 @@ export async function fetchDashboard() {
   const request = await api.get('/dashboard')
   return request.data.data
 }
+
 export async function fetchFakultas(page: number) {
-  const request = await api.get(`/fakultas/?page=${page}`)
+  //   const request = await api.get(`/fakultas/?page=${page}&search=p`)
+  const request = await api.get(`/fakultas`, {
+    params: { page: page, search: 'p' },
+  })
+
   return request.data.data
 }
 

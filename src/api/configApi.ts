@@ -1,12 +1,4 @@
-import {
-  createPayload,
-  createSalt,
-  createSignature,
-  createTimestamp,
-  decrypt,
-  encrypt,
-} from '~/lib/crypto'
-
+import EncryptRequestResponse from '~/lib/EncryptRequestResponse'
 import axios from 'axios'
 import { getCookie } from '~/utils/cookie'
 
@@ -19,26 +11,14 @@ const api = axios.create({
   },
 })
 
+const encryptRequestResponse = new EncryptRequestResponse(
+  process.env.NEXT_PUBLIC_SECURE_COMMUNICATION_KEY as string,
+)
+encryptRequestResponse.injectInterceptors(api)
+
 // Request Interceptor
 api.interceptors.request.use(
   async (config) => {
-    if (config.method?.toUpperCase() === 'GET') {
-      delete config.data
-    } else {
-      const encryptedData = encrypt(JSON.stringify(config.data))
-      if (encryptedData.error) return Promise.reject(encryptedData.error)
-      config.data = encryptedData.data
-    }
-
-    const timestamp = createTimestamp()
-    const salt = createSalt()
-    const payload = createPayload(timestamp, salt, config.data || '')
-    const signature = createSignature(payload)
-
-    config.headers['X-TIMESTAMP'] = timestamp
-    config.headers['X-SALT'] = salt
-    config.headers['X-SIGNATURE'] = signature
-
     const token = await getCookie('access_token')
 
     if (token) {
@@ -46,25 +26,6 @@ api.interceptors.request.use(
     }
 
     return config
-  },
-  (error) => Promise.reject(error),
-)
-
-// Response Interceptor
-api.interceptors.response.use(
-  (response) => {
-    const encryptedResponse = response.data.data
-    const decryptedResponse = decrypt(encryptedResponse)
-
-    if (decryptedResponse.error) return Promise.reject(decryptedResponse.error)
-
-    return {
-      ...response,
-      data: {
-        ...response.data,
-        data: JSON.parse(decryptedResponse.data ?? ''),
-      },
-    }
   },
   (error) => Promise.reject(error),
 )

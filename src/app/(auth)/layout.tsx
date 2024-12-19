@@ -1,5 +1,6 @@
+import { RedirectType, redirect } from 'next/navigation'
+
 import { cookies } from 'next/headers'
-import { redirect, RedirectType } from 'next/navigation'
 import { getCookieDecrypted } from '~/utils/cookie'
 
 export default async function Layout({
