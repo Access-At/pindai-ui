@@ -19,8 +19,11 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
+import { LoaderCircleIcon } from 'lucide-react'
 
 export default function LoginForm() {
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const form = useForm<z.infer<typeof authSchema>>({
     resolver: zodResolver(authSchema),
@@ -31,12 +34,14 @@ export default function LoginForm() {
   })
 
   const onSubmit = async (data: z.infer<typeof authSchema>) => {
+    setLoading(true)
     await authenticateUser(data)
       .then(async (res) => {
         await setCookie('access_token', res.data.access_token)
         await setCookie('user', res.data.user)
         const user = await getCookieDecrypted('user')
         toast.success(res.message, {})
+        setLoading(false)
 
         return router.push(`/dashboard/${user?.role}`)
       })
@@ -82,7 +87,9 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Login</Button>
+        <Button type="submit" disabled={loading}>
+          Login {loading && <LoaderCircleIcon className="animate-spin" />}
+        </Button>
       </form>
     </Form>
   )

@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '~/components/ui/dialog'
-import { EditIcon, TrashIcon } from 'lucide-react'
+import { EditIcon, LoaderCircleIcon, TrashIcon } from 'lucide-react'
 import {
   Form,
   FormControl,
@@ -41,6 +41,7 @@ import {
 } from '~/components/ui/tooltip'
 import {
   addFakultas,
+  deleteFakultas,
   fetchFakultas,
   updateFakultas,
 } from '~/api/request/dppm-request'
@@ -55,6 +56,15 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '~/components/ui/alert-dialog'
 
 function FakultasForm({
   initialData,
@@ -64,6 +74,7 @@ function FakultasForm({
   onClose: () => void
 }) {
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
   const form = useForm<z.infer<typeof fakultasSchema>>({
     resolver: zodResolver(fakultasSchema),
     defaultValues: {
@@ -73,19 +84,24 @@ function FakultasForm({
 
   const onSubmit = async (data: z.infer<typeof fakultasSchema>) => {
     try {
+      setLoading(true)
       if (initialData) {
-        const res = await updateFakultas(initialData.id, data)
-        toast.success(res.message)
+        await updateFakultas(initialData.id, data).then((res) => {
+          toast.success(res.message)
+        })
       } else {
-        const res = await addFakultas(data)
-        toast.success(res.message)
-        form.reset()
+        await addFakultas(data).then((res) => {
+          toast.success(res.message)
+          form.reset()
+        })
       }
+      setLoading(false)
       onClose() // Close the dialog after successful submission
-      router.refresh()
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Terjadi kesalahan')
     }
+
+    router.refresh()
   }
 
   return (
@@ -108,8 +124,8 @@ function FakultasForm({
           )}
         />
 
-        <Button type="submit" className="capitalize">
-          simpan
+        <Button type="submit" className="capitalize" disabled={loading}>
+          simpan {loading && <LoaderCircleIcon className="animate-spin" />}
         </Button>
       </form>
     </Form>
@@ -117,10 +133,23 @@ function FakultasForm({
 }
 
 function FakultasRow({ item, index }: { item: any; index: number }) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [alertOpen, setAlertOpen] = useState(false)
 
   const handleClose = () => {
     setOpen(false) // Close the dialog
+  }
+
+  const onDelete = async () => {
+    await deleteFakultas(item.id)
+      .then((res) => {
+        toast.success(res.message)
+        router.refresh()
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message)
+      })
   }
 
   return (
@@ -154,12 +183,32 @@ function FakultasRow({ item, index }: { item: any; index: number }) {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                size="icon"
-                className="bg-red-500/30 text-red-500 hover:bg-red-500 hover:text-primary-foreground"
-              >
-                <TrashIcon />
-              </Button>
+              <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    size="icon"
+                    className="bg-red-500/30 text-red-500 hover:bg-red-500 hover:text-primary-foreground"
+                  >
+                    <TrashIcon />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogTitle className="capitalize">
+                    hapus {item.name}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="capitalize">
+                    apakah anda yakin ingin menghapus fakultas ini?
+                  </AlertDialogDescription>
+                  <div className="flex justify-end gap-2">
+                    <AlertDialogAction onClick={onDelete}>
+                      Hapus
+                    </AlertDialogAction>
+                    <AlertDialogCancel className="border-red-500 text-red-500 hover:bg-red-500 hover:text-primary-foreground">
+                      Batal
+                    </AlertDialogCancel>
+                  </div>
+                </AlertDialogContent>
+              </AlertDialog>
             </TooltipTrigger>
             <TooltipContent className="uppercase bg-black text-sm font-medium">
               hapus
@@ -203,7 +252,6 @@ export default function Fakultas() {
     try {
       const response = await fetchFakultas(page)
       setData(response)
-      console.log(response)
     } catch (error) {
       console.error('Error fetching faculties:', error)
       toast.error('Failed to fetch faculties. Please try again.')
@@ -217,12 +265,6 @@ export default function Fakultas() {
   return (
     <Card>
       <CardHeader className="text-center font-bold text-lg md:text-xl xl:text-2xl py-8 px-6">
-        <Button
-          onClick={async () => await fetchFaculties(currentPage)}
-          type="button"
-        >
-          fetch
-        </Button>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="size-fit capitalize">tambah fakultas</Button>
