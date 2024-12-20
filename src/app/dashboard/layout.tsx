@@ -1,3 +1,5 @@
+import { cookies } from 'next/headers'
+import { redirect, RedirectType } from 'next/navigation'
 import AppSidebar from '~/components/app-sidebar'
 import ProfileButton from '~/components/profile-button'
 import {
@@ -13,6 +15,11 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }>) {
   const user = await getCookieDecrypted('user')
+  const cookie = await cookies()
+  const isLogin = cookie.has('access_token')
+  if (!isLogin) {
+    return redirect('/', 'push' as RedirectType)
+  }
 
   return (
     <SidebarProvider>

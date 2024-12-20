@@ -5,8 +5,8 @@ export const kaprodiSchema = z.object({
   email: z.string().email(),
   nidn: z.string().optional(),
   address: z.string().optional(),
-  fakultas: z.string().min(1),
-  status: z.string().min(1),
+  fakultas_id: z.string(),
+  status: z.enum(['0', '1']).default('0'),
 })
 
 export type KaprodiType = z.infer<typeof kaprodiSchema>

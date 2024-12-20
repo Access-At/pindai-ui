@@ -39,7 +39,7 @@ export async function fetchKaprodiDppm(page: number) {
 
 export async function fetchKaprodiDppmById(id: string) {
   const request = await api.get(`/dppm/kaprodi/${id}`)
-  return request.data
+  return request.data.data
 }
 
 export async function addKaprodiDppm(data: KaprodiType) {

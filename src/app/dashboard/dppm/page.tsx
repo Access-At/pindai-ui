@@ -6,18 +6,12 @@ import { Badge } from '~/components/ui/badge'
 import { ActionCard } from '~/components/cards'
 import { InformationCard } from '~/components/information'
 import { redirect, RedirectType } from 'next/navigation'
-import { cookies } from 'next/headers'
 import { getCookieDecrypted } from '~/utils/cookie'
 import { fetchDashboardDppm } from '~/api/request/dppm-request'
 
 export default async function DashboardDppm() {
   const user = await getCookieDecrypted('user')
   const { fakultas } = await fetchDashboardDppm()
-  const cookie = await cookies()
-  const isLogin = cookie.has('access_token')
-  if (!isLogin) {
-    return redirect('/', 'push' as RedirectType)
-  }
 
   if (user?.role !== 'dppm') {
     return redirect(`/dashboard/${user?.role}`, 'push' as RedirectType)

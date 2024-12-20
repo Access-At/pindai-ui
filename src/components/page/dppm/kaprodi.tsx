@@ -99,6 +99,9 @@ function KaprodiRow({
       <TableCell>{index + 1}</TableCell>
       <TableCell className="capitalize">{item.name}</TableCell>
       <TableCell className="capitalize">{item.fakultas}</TableCell>
+      <TableCell className="capitalize">
+        {item.status === '1' ? 'Aktif' : 'Tidak Aktif'}
+      </TableCell>
       <TableCell className="flex gap-2">
         <TooltipProvider delayDuration={3} disableHoverableContent>
           <Tooltip>
@@ -194,6 +197,7 @@ export default function Kaprodi() {
               <TableHead>no</TableHead>
               <TableHead>nama kaprodi</TableHead>
               <TableHead>fakultas</TableHead>
+              <TableHead>status</TableHead>
               <TableHead>action</TableHead>
             </TableRow>
           </TableHeader>

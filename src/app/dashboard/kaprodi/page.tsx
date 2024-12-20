@@ -1,4 +1,3 @@
-import { cookies } from 'next/headers'
 import { redirect, RedirectType } from 'next/navigation'
 import { fetchDashboardKaprodi } from '~/api/request/kaprodi-request'
 import Dashboard from '~/components/page/dashboard'
@@ -7,11 +6,6 @@ import { getCookieDecrypted } from '~/utils/cookie'
 
 export default async function DashboardKaprodi() {
   const user = await getCookieDecrypted('user')
-  const cookie = await cookies()
-  const isLogin = cookie.has('access_token')
-  if (!isLogin) {
-    return redirect('/', 'push' as RedirectType)
-  }
 
   const check = await fetchDashboardKaprodi()
   console.log(check)
