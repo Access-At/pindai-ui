@@ -92,7 +92,6 @@ export default function EditKaprodi() {
   const onSubmit = async (data: z.infer<typeof kaprodiSchema>) => {
     setIsLoading(true)
     try {
-      console.log(data)
       const res = await updateKaprodiDppm(params.id as string, data)
       toast.success(res.message)
       // Optionally, you can redirect the user or refresh the data here
@@ -214,7 +213,6 @@ export default function EditKaprodi() {
                                   <CommandItem
                                     key={item.name}
                                     onSelect={() => {
-                                      console.log(item.id)
                                       form.setValue('fakultas_id', item.id)
                                     }}
                                   >

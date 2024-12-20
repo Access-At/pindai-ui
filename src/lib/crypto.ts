@@ -122,7 +122,6 @@ class CryptoService {
     salt: string,
     payload: string,
   ): string {
-    console.log('createPayload', timestamp, salt, payload)
     return `${timestamp}${salt}${payload}`
   }
 
