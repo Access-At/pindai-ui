@@ -74,19 +74,17 @@ export default function AppSidebar({ role }: { role: string }) {
               of={navigationData.sub}
               render={(item, index) =>
                 item.roles.includes(role) && (
-                  <Collapsible
-                    defaultOpen
-                    className="group/collapsible"
-                    key={index}
-                  >
+                  <Collapsible className="group/collapsible" key={index}>
                     <SidebarGroup className="p-0 px-6">
                       <CollapsibleTrigger asChild>
                         <Button
                           variant="ghost"
-                          className="group-data-[state=open]/collapsible:bg-primary/30 group-data-[state=open]/collapsible:text-primary hover:bg-primary/30 hover:text-primary text-sm capitalize"
+                          className="group-data-[state=open]/collapsible:bg-primary/30 group-data-[state=open]/collapsible:text-primary hover:bg-primary/30 hover:text-primary text-sm capitalize justify-between pr-2"
                         >
-                          <ArchiveIcon />
-                          {item.name}
+                          <div className="flex gap-2">
+                            <ArchiveIcon />
+                            {item.name}
+                          </div>
                           <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
                         </Button>
                       </CollapsibleTrigger>

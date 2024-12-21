@@ -1,8 +1,8 @@
-export default function DosenPage() {
-  // TODO: Dosen Page Content KERJAIN BLOK!!!
-  return (
-    <div>
-      <div>DosenPage</div>
-    </div>
-  )
+import Dosen from '~/components/page/dosen'
+import { getCookieDecrypted } from '~/utils/cookie'
+
+export default async function DosenPage() {
+  const user = await getCookieDecrypted('user')
+
+  return <Dosen role={user?.role} />
 }
