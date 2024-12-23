@@ -3,7 +3,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 import { addKaprodiDppm } from '~/api/request/dppm-request'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader } from '~/components/ui/card'
@@ -16,7 +15,7 @@ import {
   FormMessage,
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
-import { kaprodiSchema } from '~/zodSchema/dppm/kaprodi'
+import { kaprodiSchema, KaprodiType } from '~/zodSchema/dppm/kaprodi'
 import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group'
 
 import { Check, ChevronsUpDown } from 'lucide-react'
@@ -54,7 +53,7 @@ export default function TambahKaprodi() {
     getFakultas()
   }, [])
 
-  const form = useForm<z.infer<typeof kaprodiSchema>>({
+  const form = useForm<KaprodiType>({
     resolver: zodResolver(kaprodiSchema),
     defaultValues: {
       name: '',
@@ -62,16 +61,26 @@ export default function TambahKaprodi() {
       nidn: '',
       address: '',
       fakultas_id: '',
-      status: '0',
+      status: '1',
     },
   })
 
-  const onSubmit = async (data: z.infer<typeof kaprodiSchema>) => {
+  const onSubmit = async (data: KaprodiType) => {
     setIsLoading(true)
     await addKaprodiDppm(data)
       .then((res) => {
         toast.success(res.message)
         form.reset()
+      })
+      .catch((err) => {
+        if (err.response?.data.errors) {
+          for (const [key, value] of Object.entries(err.response.data.errors)) {
+            form.setError(key as keyof KaprodiType, {
+              message: value as string,
+              type: 'manual',
+            })
+          }
+        }
       })
       .finally(() => setIsLoading(false))
   }
@@ -219,6 +228,7 @@ export default function TambahKaprodi() {
                     <RadioGroup
                       onValueChange={field.onChange}
                       className="flex flex-col space-y-1"
+                      defaultValue={field.value}
                     >
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>

@@ -1,8 +1,8 @@
-import { AuthSchema } from '~/zodSchema/authSchema'
+import { AuthType } from '~/zodSchema/authSchema'
 import api from '../configApi'
-import { response } from '~/management/store'
+import { response } from '~/interface'
 
-export async function authenticateUser(data: AuthSchema) {
+export async function authenticateUser(data: AuthType) {
   const request = await api.post<response>('/auth/login', data)
   return request.data
 }

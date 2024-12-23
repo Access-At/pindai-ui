@@ -5,7 +5,7 @@ export const authSchema = z.object({
   password: z.string().min(6),
 })
 
-export type AuthSchema = z.infer<typeof authSchema>
+export type AuthType = z.infer<typeof authSchema>
 
 // DPPM:
 // "data": {

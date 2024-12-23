@@ -91,16 +91,21 @@ export default function EditKaprodi() {
 
   const onSubmit = async (data: z.infer<typeof kaprodiSchema>) => {
     setIsLoading(true)
-    try {
-      const res = await updateKaprodiDppm(params.id as string, data)
-      toast.success(res.message)
-      // Optionally, you can redirect the user or refresh the data here
-    } catch (error) {
-      toast.error('Failed to update Kaprodi')
-      console.error(error)
-    } finally {
-      setIsLoading(false)
-    }
+    await updateKaprodiDppm(params.id as string, data)
+      .then((res) => {
+        toast.success(res.message)
+      })
+      .catch((err) => {
+        if (err.response?.data.errors) {
+          for (const [key, value] of Object.entries(err.response.data.errors)) {
+            form.setError(key as keyof z.infer<typeof kaprodiSchema>, {
+              message: value as string,
+              type: 'manual',
+            })
+          }
+        }
+      })
+      .finally(() => setIsLoading(false))
   }
 
   if (isInitialLoading) {

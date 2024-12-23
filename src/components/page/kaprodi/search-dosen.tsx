@@ -18,7 +18,7 @@ export default function SearchDosen() {
         className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
       />
       <Input
-        placeholder="Cari Penelitian"
+        placeholder="Cari Dosen"
         onChange={(e) => setValue(e.target.value)}
       />
       <ActionButton

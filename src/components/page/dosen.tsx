@@ -1,11 +1,10 @@
 'use client'
 import { useAtomValue } from 'jotai'
 import { InfoIcon } from 'lucide-react'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { fetchDosen } from '~/api/request/dosen-request'
-import { buttonVariants } from '~/components/ui/button'
+import { Button } from '~/components/ui/button'
 import { Card, CardFooter } from '~/components/ui/card'
 import {
   Pagination,
@@ -28,41 +27,18 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '~/components/ui/tooltip'
-import { cn } from '~/lib/utils'
 import { dosenSearch } from '~/state/store'
 import EachUtil from '~/utils/each-util'
-
-interface Dosen {
-  affiliate_campus: string
-  fakultas: string
-  id: string
-  job_functional: string
-  name: string
-  nidn: string
-  prodi: string
-  scholar_id: string
-  scopus_id: string
-}
-
-interface Meta {
-  current_page: number
-  from: number
-  last_page: number
-  path: string
-  per_page: number
-  to: number
-  total: number
-}
-
-interface DosenResponse {
-  dosen: Dosen[]
-  meta: Meta
-}
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../ui/dialog'
+import DetailDosen from './detail-dosen'
+import { DosenResponse } from '~/interface'
+import { useDebounce } from 'use-debounce'
 
 export default function Dosen({ role }: { role: string }) {
   const value = useAtomValue(dosenSearch)
   const [currentPage, setCurrentPage] = useState(1)
   const [data, setData] = useState<DosenResponse>()
+  const [search] = useDebounce(value, 500)
 
   const getDosen = async (page: number, role: string, value: string) => {
     try {
@@ -76,8 +52,8 @@ export default function Dosen({ role }: { role: string }) {
   }
 
   useEffect(() => {
-    getDosen(currentPage, role, value)
-  }, [currentPage, role, value])
+    getDosen(currentPage, role, search)
+  }, [currentPage, role, search])
 
   return (
     <Card>
@@ -113,15 +89,21 @@ export default function Dosen({ role }: { role: string }) {
                 <TableCell>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Link
-                        href={`/dashboard/dppm/dosen/${item.id}`}
-                        className={cn(
-                          buttonVariants({ variant: 'default', size: 'icon' }),
-                          'bg-cyan-500 text-primary-foreground hover:bg-cyan-600 hover:text-primary-foreground',
-                        )}
-                      >
-                        <InfoIcon />
-                      </Link>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="default"
+                            size="icon"
+                            className="bg-cyan-500 text-primary-foreground hover:bg-cyan-600 hover:text-primary-foreground"
+                          >
+                            <InfoIcon />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogTitle>Detail Dosen</DialogTitle>
+                          <DetailDosen dosen={item} />
+                        </DialogContent>
+                      </Dialog>
                     </TooltipTrigger>
                     <TooltipContent className="bg-black text-white text-sm uppercase">
                       lihat data dosen

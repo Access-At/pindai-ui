@@ -1,6 +1,7 @@
 import EncryptRequestResponse from '~/lib/EncryptRequestResponse'
 import axios from 'axios'
 import { getCookie, removeCookie } from '~/utils/cookie'
+import { redirect, RedirectType } from 'next/navigation'
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL, // Gunakan .env
@@ -32,14 +33,22 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => {
-    if (response.status === 401) {
-      removeCookie('access_token')
-      removeCookie('user')
-    }
-
     return response
   },
-  (error) => Promise.reject(error),
+  (error) => {
+    if (!error.response) {
+      return Promise.reject(error)
+    }
+
+    if (error.response.status === 401) {
+      removeCookie('access_token')
+      removeCookie('user')
+
+      throw redirect('/', 'push' as RedirectType)
+    }
+
+    return Promise.reject(error)
+  },
 )
 
 export default api

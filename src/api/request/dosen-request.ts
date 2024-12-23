@@ -12,6 +12,11 @@ export async function fetchDosen(
   return request.data.data
 }
 
+export async function fetchDosenById(id: string, role: string) {
+  const request = await api.get(`/${role}/dosen/${id}`)
+  return request.data.data
+}
+
 export async function addDosen(data: DosenType) {
   const request = await api.post(`/kaprodi/dosen`, data)
   return request.data

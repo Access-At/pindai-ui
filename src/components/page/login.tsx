@@ -12,12 +12,11 @@ import { getCookieDecrypted, setCookie } from '~/utils/cookie'
 
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
-import { authSchema } from '~/zodSchema/authSchema'
+import { authSchema, AuthType } from '~/zodSchema/authSchema'
 import { authenticateUser } from '~/api/request/auth-request'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { LoaderCircleIcon } from 'lucide-react'
@@ -25,7 +24,7 @@ import { LoaderCircleIcon } from 'lucide-react'
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const form = useForm<z.infer<typeof authSchema>>({
+  const form = useForm<AuthType>({
     resolver: zodResolver(authSchema),
     defaultValues: {
       email: '',
@@ -33,7 +32,7 @@ export default function LoginForm() {
     },
   })
 
-  const onSubmit = async (data: z.infer<typeof authSchema>) => {
+  const onSubmit = async (data: AuthType) => {
     setLoading(true)
     await authenticateUser(data)
       .then(async (res) => {
@@ -46,8 +45,9 @@ export default function LoginForm() {
         return router.push(`/dashboard/${user?.role}`)
       })
       .catch((err) => {
-        toast.error(err.response.data.message)
+        toast.error(err.response?.data?.message)
       })
+      .finally(() => setLoading(false))
   }
 
   return (

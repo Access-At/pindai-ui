@@ -10,15 +10,17 @@ import {
 
 export default function Breadcrumbs({
   children,
+  href,
 }: {
   children: React.ReactNode
+  href: string
 }) {
   return (
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="/dashboard/dosen">Dashboard</Link>
+            <Link href={href}>Dashboard</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />

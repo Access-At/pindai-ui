@@ -87,6 +87,16 @@ export default function TambahDosen() {
         toast.success(res.message)
         form.reset()
       })
+      .catch((err) => {
+        if (err.response?.data.errors) {
+          for (const [key, value] of Object.entries(err.response.data.errors)) {
+            form.setError(key as keyof DosenType, {
+              message: value as string,
+              type: 'manual',
+            })
+          }
+        }
+      })
       .finally(() => setIsLoading(false))
   }
 

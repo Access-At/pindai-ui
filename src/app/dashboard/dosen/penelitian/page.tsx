@@ -7,23 +7,17 @@ import { Card } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 
 const tahun = Array.from({ length: 30 }).map((_, i) => (2024 - i).toString())
-const createdDate = Array.from({ length: 30 }).map((_, i) => {
-  const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-  return date.toLocaleString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
-})
+const createdDate = ['disetujui', 'menunggu', 'ditolak']
 
 export default function Penelitian() {
   return (
     <div className="flex flex-col gap-4">
-      <Breadcrumbs>Penelitian</Breadcrumbs>
+      <Breadcrumbs href={'/dashboard/dosen/penelitian'}>Penelitian</Breadcrumbs>
       <Card className="flex gap-4 px-6 py-4">
         <ActionButton
           icon={<CrossIcon className="mr-2 h-4 w-4" />}
           label="Tambah Penelitian"
+          href={'/dashboard/dosen/penelitian/tambah'}
           tooltip="Tambah Penelitian Baru Anda"
           className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
         />

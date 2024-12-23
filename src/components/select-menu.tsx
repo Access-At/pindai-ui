@@ -23,7 +23,11 @@ export default function SelectMenu({
       <SelectContent>
         <EachUtil
           of={item}
-          render={(item) => <SelectItem value={item}>{item}</SelectItem>}
+          render={(item) => (
+            <SelectItem value={item} className="capitalize">
+              {item}
+            </SelectItem>
+          )}
         />
       </SelectContent>
     </Select>

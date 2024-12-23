@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-
 import { Card, CardContent, CardFooter, CardHeader } from '~/components/ui/card'
 import { EditIcon, TrashIcon } from 'lucide-react'
 import {
@@ -25,12 +23,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '~/components/ui/tooltip'
-// import {
-//   addFakultas,
-//   deleteFakultas,
-//   fetchFakultas,
-//   updateFakultas,
-// } from '~/api/request/dppm-request'
 import { useEffect, useState } from 'react'
 
 import { Button, buttonVariants } from '~/components/ui/button'
@@ -49,34 +41,14 @@ import {
 import { deleteKaprodiDppm, fetchKaprodiDppm } from '~/api/request/dppm-request'
 import Link from 'next/link'
 import { cn } from '~/lib/utils'
-
-interface Kaprodi {
-  id: string
-  name: string
-  fakultas: string
-}
-
-interface Meta {
-  current_page: number
-  from: number
-  last_page: number
-  path: string
-  per_page: number
-  to: number
-  total: number
-}
-
-interface KaprodiResponse {
-  kaprodi: Kaprodi[]
-  meta: Meta
-}
+import { IKaprodi, KaprodiResponse } from '~/interface'
 
 function KaprodiRow({
-  item,
+  kaprodi,
   index,
   label,
 }: {
-  item: any
+  kaprodi: IKaprodi
   index: number
   label: string
 }) {
@@ -84,7 +56,7 @@ function KaprodiRow({
   const [alertOpen, setAlertOpen] = useState(false)
 
   const onDelete = async () => {
-    await deleteKaprodiDppm(item.id)
+    await deleteKaprodiDppm(kaprodi.id)
       .then((res) => {
         toast.success(res.message)
         router.refresh()
@@ -97,17 +69,17 @@ function KaprodiRow({
   return (
     <TableRow>
       <TableCell>{index + 1}</TableCell>
-      <TableCell className="capitalize">{item.name}</TableCell>
-      <TableCell className="capitalize">{item.fakultas}</TableCell>
+      <TableCell className="capitalize">{kaprodi.name}</TableCell>
+      <TableCell className="capitalize">{kaprodi.fakultas}</TableCell>
       <TableCell className="capitalize">
-        {item.status === '1' ? 'Aktif' : 'Tidak Aktif'}
+        {kaprodi.status === '1' ? 'Aktif' : 'Tidak Aktif'}
       </TableCell>
       <TableCell className="flex gap-2">
         <TooltipProvider delayDuration={3} disableHoverableContent>
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href={`/dashboard/dppm/kaprodi/edit/${item.id}`}
+                href={`/dashboard/dppm/kaprodi/edit/${kaprodi.id}`}
                 className={cn(
                   buttonVariants({ variant: 'default', size: 'icon' }),
                   'bg-cyan-500/30 text-cyan-500 hover:bg-cyan-500 hover:text-primary-foreground',
@@ -133,7 +105,7 @@ function KaprodiRow({
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogTitle className="capitalize">
-                    hapus {item.name}
+                    hapus {kaprodi.name}
                   </AlertDialogTitle>
                   <AlertDialogDescription className="capitalize">
                     apakah anda yakin ingin menghapus {label} ini?
@@ -206,7 +178,7 @@ export default function Kaprodi() {
               of={data?.kaprodi || []}
               render={(item, index) => (
                 <KaprodiRow
-                  item={item}
+                  kaprodi={item}
                   key={item.id}
                   index={index}
                   label="kaprodi"
