@@ -50,11 +50,10 @@ import { useEffect, useState } from 'react'
 import { Button } from '~/components/ui/button'
 import EachUtil from '~/utils/each-util'
 import { Input } from '~/components/ui/input'
-import { fakultasSchema } from '~/zodSchema/dppm/fakultas'
+import { fakultasSchema, FakultasType } from '~/zodSchema/dppm/fakultas'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   AlertDialog,
@@ -77,14 +76,14 @@ function FakultasForm({
 }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const form = useForm<z.infer<typeof fakultasSchema>>({
+  const form = useForm<FakultasType>({
     resolver: zodResolver(fakultasSchema),
     defaultValues: {
       name: initialData?.name || '',
     },
   })
 
-  const onSubmit = async (data: z.infer<typeof fakultasSchema>) => {
+  const onSubmit = async (data: FakultasType) => {
     try {
       setLoading(true)
       if (initialData) {
@@ -191,7 +190,10 @@ function FakultasRow({
                 </DialogContent>
               </Dialog>
             </TooltipTrigger>
-            <TooltipContent className="uppercase bg-black text-sm font-medium">
+            <TooltipContent
+              side="left"
+              className="uppercase bg-black text-sm font-medium"
+            >
               edit
             </TooltipContent>
           </Tooltip>
@@ -224,7 +226,10 @@ function FakultasRow({
                 </AlertDialogContent>
               </AlertDialog>
             </TooltipTrigger>
-            <TooltipContent className="uppercase bg-black text-sm font-medium">
+            <TooltipContent
+              side="right"
+              className="uppercase bg-black text-sm font-medium"
+            >
               hapus
             </TooltipContent>
           </Tooltip>

@@ -32,6 +32,14 @@ export const navigationData = {
       name: 'publikasi',
       roles: ['dosen', 'kaprodi'],
     },
+    {
+      name: 'scholar',
+      roles: ['dosen'],
+    },
+    {
+      name: 'scopus',
+      roles: ['dosen'],
+    },
   ],
   sub: [
     {

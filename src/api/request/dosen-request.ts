@@ -21,3 +21,8 @@ export async function addDosen(data: DosenType) {
   const request = await api.post(`/kaprodi/dosen`, data)
   return request.data
 }
+
+export async function updateDosen(id: string, data: DosenType) {
+  const request = await api.put(`/kaprodi/dosen/${id}`, data)
+  return request.data
+}

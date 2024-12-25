@@ -1,6 +1,6 @@
 'use client'
 import { useAtomValue } from 'jotai'
-import { InfoIcon } from 'lucide-react'
+import { EditIcon, InfoIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { fetchDosen } from '~/api/request/dosen-request'
@@ -25,6 +25,7 @@ import {
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from '~/components/ui/tooltip'
 import { dosenSearch } from '~/state/store'
@@ -86,29 +87,54 @@ export default function Dosen({ role }: { role: string }) {
                 <TableCell>{item.job_functional}</TableCell>
                 <TableCell>{item.scholar_id}</TableCell>
                 <TableCell>{item.scopus_id}</TableCell>
-                <TableCell>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Dialog>
-                        <DialogTrigger asChild>
+                <TableCell className="flex gap-2 justify-center">
+                  <TooltipProvider delayDuration={0} disableHoverableContent>
+                    {role === 'kaprodi' ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
                           <Button
-                            variant="default"
+                            variant="outline"
                             size="icon"
-                            className="bg-cyan-500 text-primary-foreground hover:bg-cyan-600 hover:text-primary-foreground"
+                            className="border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-primary-foreground"
                           >
-                            <InfoIcon />
+                            <EditIcon />
                           </Button>
-                        </DialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side="left"
+                          className="bg-black text-white text-sm uppercase"
+                        >
+                          edit dosen
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : null}
+
+                    <Tooltip>
+                      <Dialog>
+                        <TooltipTrigger asChild>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="default"
+                              size="icon"
+                              className="bg-cyan-500 text-primary-foreground hover:bg-cyan-600 hover:text-primary-foreground"
+                            >
+                              <InfoIcon />
+                            </Button>
+                          </DialogTrigger>
+                        </TooltipTrigger>
                         <DialogContent>
                           <DialogTitle>Detail Dosen</DialogTitle>
                           <DetailDosen dosen={item} />
                         </DialogContent>
                       </Dialog>
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-black text-white text-sm uppercase">
-                      lihat data dosen
-                    </TooltipContent>
-                  </Tooltip>
+                      <TooltipContent
+                        side="right"
+                        className="bg-black text-white text-sm uppercase"
+                      >
+                        lihat data dosen
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </TableCell>
               </TableRow>
             )}

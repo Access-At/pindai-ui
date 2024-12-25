@@ -3,6 +3,7 @@ import { buttonVariants } from '~/components/ui/button'
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from '~/components/ui/tooltip'
 import { cn } from '~/lib/utils'
@@ -23,25 +24,30 @@ export default function ActionButton({
   isIcon?: boolean
 }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Link
-          href={href || '#'}
-          className={cn(
-            buttonVariants({
-              variant: 'outline',
-              size: isIcon ? 'icon' : undefined,
-            }),
-            className,
-          )}
+    <TooltipProvider delayDuration={0} disableHoverableContent>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link
+            href={href || '#'}
+            className={cn(
+              buttonVariants({
+                variant: 'outline',
+                size: isIcon ? 'icon' : undefined,
+              }),
+              className,
+            )}
+          >
+            {icon}
+            {label}
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent
+          side="bottom"
+          className="bg-black text-white text-sm tracking-wider"
         >
-          {icon}
-          {label}
-        </Link>
-      </TooltipTrigger>
-      <TooltipContent className="bg-black text-white text-sm tracking-wider">
-        {tooltip}
-      </TooltipContent>
-    </Tooltip>
+          {tooltip}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   )
 }

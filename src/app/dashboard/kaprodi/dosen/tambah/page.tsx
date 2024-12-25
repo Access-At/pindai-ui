@@ -34,10 +34,9 @@ import {
 import EachUtil from '~/utils/each-util'
 import { dosenSchema, DosenType } from '~/zodSchema/kaprodi/dosen'
 import { addDosen } from '~/api/request/dosen-request'
-import { fetchProdiList } from '~/api/request/prodi-request'
 import { ProdiType } from '~/zodSchema/kaprodi/prodi'
 import { FakultasType } from '~/zodSchema/dppm/fakultas'
-import { fetchFakultasList } from '~/api/request/fakultas-request'
+import { fetchFakultasList, fetchProdiList } from '~/api/request/request'
 
 export default function TambahDosen() {
   const [isLoading, setIsLoading] = useState(false)
@@ -52,13 +51,6 @@ export default function TambahDosen() {
       name: '',
       email: '',
       nidn: '',
-      address: '',
-      name_with_title: '',
-      phone_number: '',
-      scholar_id: '',
-      scopus_id: '',
-      job_functional: '',
-      affiliate_campus: '',
       fakultas_id: '',
       prodi_id: '',
     },
@@ -100,7 +92,6 @@ export default function TambahDosen() {
       .finally(() => setIsLoading(false))
   }
 
-  console.log(form.getValues())
   return (
     <Card className="flex flex-col items-center justify-center gap-2">
       <CardHeader className="text-center font-bold uppercase text-lg md:text-xl xl:text-2xl">
@@ -156,104 +147,6 @@ export default function TambahDosen() {
 
             <FormField
               control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Alamat</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="name_with_title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nama Dengan Gelar</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="phone_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nomor Telepon</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="scholar_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Scholar ID</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="scopus_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Scopus ID</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="job_functional"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Jabatan Fungsional</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="affiliate_campus"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Kampus Affiliasi</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="fakultas_id"
               render={({ field }) => (
                 <FormItem>
@@ -298,15 +191,14 @@ export default function TambahDosen() {
                                     setFakultasOpen(false)
                                   }}
                                 >
-                                  {item.name}
                                   <Check
                                     className={cn(
-                                      'ml-auto',
-                                      item.name === field.value
+                                      item.id === field.value
                                         ? 'opacity-100'
                                         : 'opacity-0',
                                     )}
                                   />
+                                  {item.name}
                                 </CommandItem>
                               )}
                             />
@@ -365,15 +257,14 @@ export default function TambahDosen() {
                                     setProdiOpen(false)
                                   }}
                                 >
-                                  {item.name}
                                   <Check
                                     className={cn(
-                                      'ml-auto',
-                                      item.name === field.value
+                                      item.id === field.value
                                         ? 'opacity-100'
                                         : 'opacity-0',
                                     )}
                                   />
+                                  {item.name}
                                 </CommandItem>
                               )}
                             />

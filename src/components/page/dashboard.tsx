@@ -35,7 +35,7 @@ export default async function Dashboard({
       <h1 className="capitalize font-semibold text-muted-foreground">
         {title}
       </h1>
-      <div className="grid grid-flow-row grid-cols-4 gap-4">
+      <div className="grid grid-flow-row md:grid-cols-2 lg:grid-cols-4 gap-4">
         <EachUtil
           of={penelitianData}
           render={(item, index) => (
@@ -73,12 +73,12 @@ export default async function Dashboard({
         description="Anda dapat melakukan penelitian dan pengabdian kepada masyarakat."
       />
 
-      <div className="flex items-center justify-center gap-4">
+      <div className="flex flex-col md:flex-row justify-center gap-4">
         <ActionCard title="penelitian" role={role} />
         <ActionCard title="pengabdian" role={role} />
       </div>
 
-      <div className="flex items-start justify-center gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-start justify-center gap-4">
         <InformationCard role={role} title="informasi dosen" data={infoData} />
         <InformationCard
           role={role}

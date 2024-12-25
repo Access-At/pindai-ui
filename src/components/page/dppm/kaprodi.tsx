@@ -88,7 +88,10 @@ function KaprodiRow({
                 <EditIcon />
               </Link>
             </TooltipTrigger>
-            <TooltipContent className="uppercase bg-black text-sm font-medium">
+            <TooltipContent
+              side="left"
+              className="uppercase bg-black text-sm font-medium"
+            >
               edit
             </TooltipContent>
           </Tooltip>
@@ -121,7 +124,10 @@ function KaprodiRow({
                 </AlertDialogContent>
               </AlertDialog>
             </TooltipTrigger>
-            <TooltipContent className="uppercase bg-black text-sm font-medium">
+            <TooltipContent
+              side="right"
+              className="uppercase bg-black text-sm font-medium"
+            >
               hapus
             </TooltipContent>
           </Tooltip>

@@ -6,7 +6,7 @@ import {
   TableHead,
   TableRow,
 } from '~/components/ui/table'
-import { IDosen } from './dosen'
+import { IDosen } from '~/interface'
 
 export default function DetailDosen({ dosen }: { dosen: IDosen }) {
   return (

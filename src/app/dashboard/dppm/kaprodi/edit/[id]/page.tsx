@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 import {
   fetchKaprodiDppmById,
   updateKaprodiDppm,
@@ -40,9 +39,9 @@ import {
   PopoverTrigger,
 } from '~/components/ui/popover'
 import { FakultasType } from '~/zodSchema/dppm/fakultas'
-import { fetchFakultasList } from '~/api/request/fakultas-request'
 import EachUtil from '~/utils/each-util'
 import { useParams } from 'next/navigation'
+import { fetchFakultasList } from '~/api/request/request'
 
 export default function EditKaprodi() {
   const params = useParams()
@@ -53,7 +52,7 @@ export default function EditKaprodi() {
 
   const [initialData, setInitialData] = useState<KaprodiType>()
 
-  const form = useForm<z.infer<typeof kaprodiSchema>>({
+  const form = useForm<KaprodiType>({
     resolver: zodResolver(kaprodiSchema),
     defaultValues: {
       name: initialData?.name || '',
@@ -89,7 +88,7 @@ export default function EditKaprodi() {
       .finally(() => setIsInitialLoading(false))
   }, [params.id, form])
 
-  const onSubmit = async (data: z.infer<typeof kaprodiSchema>) => {
+  const onSubmit = async (data: KaprodiType) => {
     setIsLoading(true)
     await updateKaprodiDppm(params.id as string, data)
       .then((res) => {
@@ -98,7 +97,7 @@ export default function EditKaprodi() {
       .catch((err) => {
         if (err.response?.data.errors) {
           for (const [key, value] of Object.entries(err.response.data.errors)) {
-            form.setError(key as keyof z.infer<typeof kaprodiSchema>, {
+            form.setError(key as keyof KaprodiType, {
               message: value as string,
               type: 'manual',
             })
@@ -224,7 +223,6 @@ export default function EditKaprodi() {
                                     {item.name}
                                     <Check
                                       className={cn(
-                                        'ml-auto',
                                         item.id === field.value
                                           ? 'opacity-100'
                                           : 'opacity-0',

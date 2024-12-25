@@ -35,8 +35,8 @@ import {
   PopoverTrigger,
 } from '~/components/ui/popover'
 import { FakultasType } from '~/zodSchema/dppm/fakultas'
-import { fetchFakultasList } from '~/api/request/fakultas-request'
 import EachUtil from '~/utils/each-util'
+import { fetchFakultasList } from '~/api/request/request'
 
 export default function TambahKaprodi() {
   const [isLoading, setIsLoading] = useState(false)
@@ -196,15 +196,14 @@ export default function TambahKaprodi() {
                                     form.setValue('fakultas_id', item.id)
                                   }}
                                 >
-                                  {item.name}
                                   <Check
                                     className={cn(
-                                      'ml-auto',
-                                      item.name === field.value
+                                      item.id === field.value
                                         ? 'opacity-100'
                                         : 'opacity-0',
                                     )}
                                   />
+                                  {item.name}
                                 </CommandItem>
                               )}
                             />

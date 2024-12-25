@@ -29,7 +29,7 @@ export default function SearchDosen() {
       />
       <ActionButton
         icon={<UploadIcon className="h-4 w-4" />}
-        tooltip="Unggah Excel"
+        tooltip="Export Excel"
         className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white p-4"
         isIcon
       />

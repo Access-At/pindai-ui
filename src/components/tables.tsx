@@ -9,7 +9,15 @@ import {
 } from './ui/table'
 import { researchData } from '~/dummy'
 import { Card } from './ui/card'
-import { Button } from './ui/button'
+import { buttonVariants } from './ui/button'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip'
+import Link from 'next/link'
+import { cn } from '~/lib/utils'
 
 export default function Tables() {
   return (
@@ -80,12 +88,30 @@ export default function Tables() {
                   )}
                 </TableCell>
                 <TableCell className="flex text-center justify-center items-center align-middle">
-                  <Button
-                    variant="ghost"
-                    className="size-fit p-2 hover:bg-neutral-200"
-                  >
-                    <InfoIcon className="text-blue-500" />
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link
+                          href={`/dosen/penelitian/${research.id}`}
+                          className={cn(
+                            buttonVariants({
+                              variant: 'outline',
+                              size: 'icon',
+                            }),
+                            'bg-cyan-500 text-primary-foreground hover:bg-cyan-600 hover:text-primary-foreground',
+                          )}
+                        >
+                          <InfoIcon />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="right"
+                        className="bg-black text-white text-sm uppercase"
+                      >
+                        lihat data dosen
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </TableCell>
               </TableRow>
             ))}
