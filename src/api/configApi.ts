@@ -40,7 +40,10 @@ api.interceptors.response.use(
       return Promise.reject(error)
     }
 
-    if (error.response.status === 401) {
+    if (
+      error.response.status === 401 &&
+      error.response.data.message === 'Unauthenticated.'
+    ) {
       removeCookie('access_token')
       removeCookie('user')
 
