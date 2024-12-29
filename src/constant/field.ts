@@ -12,3 +12,20 @@ export const profileField = [
   { name: 'scholar_id', label: 'Scholar ID' },
   { name: 'scopus_id', label: 'Scopus ID' },
 ]
+
+export const kaprodiField = [
+  { name: 'name', label: 'nama kaprodi' },
+  {
+    name: 'email',
+    type: 'email',
+    label: 'email',
+  },
+  { name: 'nidn', label: 'nidn' },
+  { name: 'address', label: 'alamat' },
+  {
+    name: 'fakultas_id',
+    label: 'fakultas',
+    select: true,
+  },
+  { name: 'status', label: 'status', radio: true },
+]

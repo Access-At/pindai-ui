@@ -35,7 +35,7 @@ api.interceptors.response.use(
   (response) => {
     return response
   },
-  (error) => {
+  async (error) => {
     if (!error.response) {
       return Promise.reject(error)
     }
@@ -44,8 +44,8 @@ api.interceptors.response.use(
       error.response.status === 401 &&
       error.response.data.message === 'Unauthenticated.'
     ) {
-      removeCookie('access_token')
-      removeCookie('user')
+      await removeCookie('access_token')
+      await removeCookie('user')
 
       throw redirect('/', 'push' as RedirectType)
     }

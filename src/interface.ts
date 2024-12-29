@@ -37,6 +37,10 @@ export interface IDosen {
 export interface IKaprodi {
   id: string
   name: string
+  email: string
+  nidn: string
+  address: string
+  fakultas_id: string
   fakultas: string
   status: string
 }

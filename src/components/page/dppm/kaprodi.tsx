@@ -25,7 +25,7 @@ import {
 } from '~/components/ui/tooltip'
 import { useEffect, useState } from 'react'
 
-import { Button, buttonVariants } from '~/components/ui/button'
+import { Button } from '~/components/ui/button'
 import EachUtil from '~/utils/each-util'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -38,22 +38,76 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '~/components/ui/alert-dialog'
-import { deleteKaprodiDppm, fetchKaprodiDppm } from '~/api/request/dppm-request'
-import Link from 'next/link'
-import { cn } from '~/lib/utils'
+import {
+  addKaprodiDppm,
+  deleteKaprodiDppm,
+  fetchKaprodiDppm,
+} from '~/api/request/dppm-request'
 import { IKaprodi, KaprodiResponse } from '~/interface'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from '~/components/ui/dialog'
+import Forms from '~/components/forms'
+import { fetchFakultasList } from '~/api/request/request'
+import { FakultasType } from '~/zodSchema/dppm/fakultas'
+import { useForm } from 'react-hook-form'
+import { kaprodiSchema, KaprodiType } from '~/zodSchema/dppm/kaprodi'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { kaprodiField } from '~/constant/field'
 
 function KaprodiRow({
   kaprodi,
+  fakultas,
   index,
   label,
 }: {
   kaprodi: IKaprodi
+  fakultas: FakultasType[]
   index: number
   label: string
 }) {
   const router = useRouter()
+  const [open, setOpen] = useState(false)
   const [alertOpen, setAlertOpen] = useState(false)
+
+  const onClose = () => setOpen(!open)
+
+  const form = useForm<KaprodiType>({
+    resolver: zodResolver(kaprodiSchema),
+    defaultValues: {
+      name: kaprodi.name,
+      email: kaprodi.email,
+      nidn: kaprodi.nidn,
+      address: kaprodi.address,
+      fakultas_id: kaprodi.fakultas_id,
+      status: kaprodi.status === '1' ? '1' : '0',
+    },
+  })
+
+  const onSubmit = async (data: KaprodiType) => {
+    // setIsLoading(true)
+    await addKaprodiDppm(data)
+      .then((res) => {
+        onClose()
+        toast.success(res.message)
+        form.reset()
+      })
+      .catch((err) => {
+        if (err.response?.data.errors) {
+          for (const [key, value] of Object.entries(err.response.data.errors)) {
+            form.setError(key as keyof KaprodiType, {
+              message: value as string,
+              type: 'manual',
+            })
+          }
+        }
+      })
+    // .finally(() => setIsLoading(false))
+  }
 
   const onDelete = async () => {
     await deleteKaprodiDppm(kaprodi.id)
@@ -78,15 +132,32 @@ function KaprodiRow({
         <TooltipProvider delayDuration={3} disableHoverableContent>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Link
-                href={`/dashboard/dppm/kaprodi/edit/${kaprodi.id}`}
-                className={cn(
-                  buttonVariants({ variant: 'default', size: 'icon' }),
-                  'bg-cyan-500/30 text-cyan-500 hover:bg-cyan-500 hover:text-primary-foreground',
-                )}
-              >
-                <EditIcon />
-              </Link>
+              <Dialog open={open} onOpenChange={onClose}>
+                <DialogTrigger asChild>
+                  <Button
+                    size="icon"
+                    className="bg-cyan-500/30 text-cyan-500 hover:bg-cyan-500 hover:text-primary-foreground"
+                  >
+                    <EditIcon />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl">
+                  <DialogTitle className="text-center capitalize">
+                    edit kaprodi
+                  </DialogTitle>
+                  <DialogDescription className="text-center capitalize">
+                    ubah data {label}
+                  </DialogDescription>
+                  <Forms
+                    form={form}
+                    fields={kaprodiField}
+                    btnText="simpan"
+                    list={fakultas}
+                    onSubmit={onSubmit}
+                    className="flex flex-col gap-4 uppercase"
+                  />
+                </DialogContent>
+              </Dialog>
             </TooltipTrigger>
             <TooltipContent
               side="left"
@@ -138,8 +209,16 @@ function KaprodiRow({
 }
 
 export default function Kaprodi() {
+  const [open, setOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
+  const [fakultas, setFakultas] = useState<FakultasType[]>()
   const [data, setData] = useState<KaprodiResponse>()
+
+  const onClose = () => setOpen(!open)
+
+  const getFakultas = async () => {
+    await fetchFakultasList().then((res) => setFakultas(res))
+  }
 
   const fetchKaprodi = async (page: number) => {
     try {
@@ -153,20 +232,66 @@ export default function Kaprodi() {
 
   useEffect(() => {
     fetchKaprodi(currentPage)
+    getFakultas()
   }, [currentPage])
+
+  const form = useForm<KaprodiType>({
+    resolver: zodResolver(kaprodiSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      nidn: '',
+      address: '',
+      fakultas_id: '',
+      status: '1',
+    },
+  })
+
+  const onSubmit = async (data: KaprodiType) => {
+    // setIsLoading(true)
+    await addKaprodiDppm(data)
+      .then((res) => {
+        onClose()
+        toast.success(res.message)
+        form.reset()
+      })
+      .catch((err) => {
+        if (err.response?.data.errors) {
+          for (const [key, value] of Object.entries(err.response.data.errors)) {
+            form.setError(key as keyof KaprodiType, {
+              message: value as string,
+              type: 'manual',
+            })
+          }
+        }
+      })
+    // .finally(() => setIsLoading(false))
+  }
 
   return (
     <Card>
       <CardHeader className="text-center font-bold text-lg md:text-xl xl:text-2xl py-8 px-6">
-        <Link
-          href="/dashboard/dppm/kaprodi/tambah"
-          className={cn(
-            buttonVariants({ variant: 'default' }),
-            'size-fit capitalize',
-          )}
-        >
-          tambah kaprodi
-        </Link>
+        <Dialog open={open} onOpenChange={onClose}>
+          <DialogTrigger asChild>
+            <Button className="size-fit capitalize">tambah kaprodi</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-3xl">
+            <DialogTitle className="text-center capitalize">
+              tambah kaprodi
+            </DialogTitle>
+            <DialogDescription className="text-center capitalize">
+              tambahkan data kaprodi
+            </DialogDescription>
+            <Forms
+              form={form}
+              fields={kaprodiField}
+              btnText="simpan"
+              list={fakultas}
+              onSubmit={onSubmit}
+              className="flex flex-col gap-4 uppercase"
+            />
+          </DialogContent>
+        </Dialog>
       </CardHeader>
       <CardContent>
         <Table>
@@ -185,6 +310,7 @@ export default function Kaprodi() {
               render={(item, index) => (
                 <KaprodiRow
                   kaprodi={item}
+                  fakultas={fakultas || []}
                   key={item.id}
                   index={index}
                   label="kaprodi"

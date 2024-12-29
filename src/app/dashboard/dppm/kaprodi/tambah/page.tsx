@@ -223,30 +223,28 @@ export default function TambahKaprodi() {
               render={({ field }) => (
                 <FormItem className="space-y-3">
                   <FormLabel>Status Kaprodi</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      className="flex flex-col space-y-1"
-                      defaultValue={field.value}
-                    >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="1" />
-                        </FormControl>
-                        <FormLabel className="font-normal capitalize">
-                          aktif
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="0" />
-                        </FormControl>
-                        <FormLabel className="font-normal capitalize">
-                          tidak aktif
-                        </FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    className="flex flex-col space-y-1"
+                    defaultValue={field.value}
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="1" />
+                      </FormControl>
+                      <FormLabel className="font-normal capitalize">
+                        aktif
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="0" />
+                      </FormControl>
+                      <FormLabel className="font-normal capitalize">
+                        tidak aktif
+                      </FormLabel>
+                    </FormItem>
+                  </RadioGroup>
                   <FormMessage />
                 </FormItem>
               )}

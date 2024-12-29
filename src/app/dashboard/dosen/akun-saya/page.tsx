@@ -44,7 +44,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover'
-import { profileField } from '~/constant/profile'
+import { profileField } from '~/constant/field'
 import { cn } from '~/lib/utils'
 import EachUtil from '~/utils/each-util'
 import { profileSchema, ProfileType } from '~/zodSchema/dosen/dosenSchema'
@@ -53,8 +53,6 @@ import { ProdiType } from '~/zodSchema/kaprodi/prodi'
 
 export default function Profile() {
   const [isLoading, setIsLoading] = useState(true)
-  const [fakultasOpen, setFakultasOpen] = useState(false)
-  const [prodiOpen, setProdiOpen] = useState(false)
   const [fakultasList, setFakultasList] = useState<FakultasType[]>([])
   const [prodiList, setProdiList] = useState<ProdiType[]>([])
 
