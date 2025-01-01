@@ -13,7 +13,7 @@ const api = axios.create({
 })
 
 const encryptRequestResponse = new EncryptRequestResponse(
-  process.env.NEXT_PUBLIC_SECURE_COMMUNICATION_KEY as string,
+  process.env.NEXT_PUBLIC_SECURE_REQUEST_KEY as string,
 )
 encryptRequestResponse.injectInterceptors(api)
 

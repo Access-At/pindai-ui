@@ -23,7 +23,7 @@ class CryptoService {
   }
 
   private static encryptionKey: string =
-    process.env.NEXT_PUBLIC_SECURE_DATA || ''
+    process.env.NEXT_PUBLIC_SECURE_DATA_KEY || ''
 
   private static secretKey: string =
     process.env.NEXT_PUBLIC_SECURE_API_KEY || ''

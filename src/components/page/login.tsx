@@ -47,6 +47,14 @@ export default function LoginForm() {
         return router.push(`/dashboard/${user?.role}`)
       })
       .catch((err) => {
+        if (err.response?.data?.errors) {
+          for (const [key, value] of Object.entries(err.response.data.errors)) {
+            form.setError(key as keyof AuthType, {
+              message: value as string,
+              type: 'manual',
+            })
+          }
+        }
         toast.error(err.response?.data?.message)
       })
       .finally(() => setLoading(false))
