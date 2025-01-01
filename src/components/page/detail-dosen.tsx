@@ -17,6 +17,10 @@ export default function DetailDosen({ dosen }: { dosen: IDosen }) {
           <TableCell>{dosen?.name}</TableCell>
         </TableRow>
         <TableRow>
+          <TableHead className="border-r">Email</TableHead>
+          <TableCell>{dosen?.email}</TableCell>
+        </TableRow>
+        <TableRow>
           <TableHead className="border-r">NIDN</TableHead>
           <TableCell>{dosen?.nidn}</TableCell>
         </TableRow>

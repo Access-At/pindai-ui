@@ -1,9 +1,13 @@
 'use client'
 import { useAtomValue } from 'jotai'
-import { EditIcon, InfoIcon } from 'lucide-react'
+import { Check, InfoIcon, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { fetchDosen } from '~/api/request/dosen-request'
+import {
+  activeDosen,
+  approvedDosen,
+  fetchDosen,
+} from '~/api/request/dosen-request'
 import { Button } from '~/components/ui/button'
 import { Card, CardFooter } from '~/components/ui/card'
 import {
@@ -34,6 +38,8 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../ui/dialog'
 import DetailDosen from './detail-dosen'
 import { DosenResponse } from '~/interface'
 import { useDebounce } from 'use-debounce'
+import { Badge } from '../ui/badge'
+import { cn } from '~/lib/utils'
 
 export default function Dosen({ role }: { role: string }) {
   const value = useAtomValue(dosenSearch)
@@ -52,6 +58,28 @@ export default function Dosen({ role }: { role: string }) {
     }
   }
 
+  const handleApprove = async (id: string) => {
+    await approvedDosen(id)
+      .then((res) => {
+        toast.success(res.message)
+        getDosen(currentPage, role, search)
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message)
+      })
+  }
+
+  const handleActive = async (id: string, is_active: boolean) => {
+    await activeDosen(id, !is_active)
+      .then((res) => {
+        toast.success(res.message)
+        getDosen(currentPage, role, search)
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message)
+      })
+  }
+
   useEffect(() => {
     getDosen(currentPage, role, search)
   }, [currentPage, role, search])
@@ -63,14 +91,9 @@ export default function Dosen({ role }: { role: string }) {
           <TableRow className="uppercase font-semibold">
             <TableHead className="text-center">no</TableHead>
             <TableHead className="text-center">nama</TableHead>
-            <TableHead className="text-center">nidn</TableHead>
-            <TableHead className="text-center">fakultas</TableHead>
-            <TableHead className="text-center">prodi</TableHead>
-            <TableHead className="text-center">afiliasi</TableHead>
-            <TableHead className="text-center">jab. fungsi</TableHead>
-            <TableHead className="text-center">scholar id</TableHead>
-            <TableHead className="text-center">scopus id</TableHead>
-            <TableHead className="text-center">action</TableHead>
+            <TableHead className="text-center">email</TableHead>
+            <TableHead className="text-center">status</TableHead>
+            <TableHead className="text-center">Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -80,31 +103,59 @@ export default function Dosen({ role }: { role: string }) {
               <TableRow className="text-center" key={index}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{item.name}</TableCell>
-                <TableCell>{item.nidn}</TableCell>
-                <TableCell>{item.fakultas}</TableCell>
-                <TableCell>{item.prodi}</TableCell>
-                <TableCell>{item.affiliate_campus}</TableCell>
-                <TableCell>{item.job_functional}</TableCell>
-                <TableCell>{item.scholar_id}</TableCell>
-                <TableCell>{item.scopus_id}</TableCell>
+                <TableCell>{item.email}</TableCell>
+                <TableCell className="capitalize">
+                  <TooltipProvider delayDuration={0} disableHoverableContent>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge
+                          variant="outline"
+                          className={cn('p-2 hover:text-primary-foreground', {
+                            'border-green-500 text-green-500 hover:bg-green-500':
+                              item.is_active,
+                            'border-red-500 text-red-500 hover:bg-red-500':
+                              !item.is_active,
+                          })}
+                          onClick={() =>
+                            role === 'kaprodi' &&
+                            handleActive(item.id, item.is_active)
+                          }
+                        >
+                          {item.is_active ? (
+                            <Check className="w-4 h-4" />
+                          ) : (
+                            <X className="w-4 h-4" />
+                          )}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="left"
+                        className="bg-black text-white text-xs uppercase"
+                      >
+                        {item.is_active ? 'Dosen Aktif' : 'Dosen Tidak Aktif'}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </TableCell>
                 <TableCell className="flex gap-2 justify-center">
                   <TooltipProvider delayDuration={0} disableHoverableContent>
-                    {role === 'kaprodi' ? (
+                    {role === 'kaprodi' && !item.is_approved ? (
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
                             variant="outline"
                             size="icon"
-                            className="border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-primary-foreground"
+                            className="border-green-500 text-green-500 hover:bg-green-500 hover:text-primary-foreground"
+                            onClick={() => handleApprove(item.id)}
                           >
-                            <EditIcon />
+                            <Check />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent
                           side="left"
-                          className="bg-black text-white text-sm uppercase"
+                          className="bg-black text-white text-xs uppercase"
                         >
-                          edit dosen
+                          Approve
                         </TooltipContent>
                       </Tooltip>
                     ) : null}
@@ -129,7 +180,7 @@ export default function Dosen({ role }: { role: string }) {
                       </Dialog>
                       <TooltipContent
                         side="right"
-                        className="bg-black text-white text-sm uppercase"
+                        className="bg-black text-white text-xs uppercase"
                       >
                         lihat data dosen
                       </TooltipContent>

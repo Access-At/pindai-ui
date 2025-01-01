@@ -28,8 +28,8 @@ export default function RootLayout({
           toastOptions={{
             duration: 5000,
             classNames: {
-              success: 'text-green-500 bg-background border-none',
-              error: 'text-red-500 bg-background border-none',
+              success: 'text-green-500 bg-background border-none capitalize',
+              error: 'text-red-500 bg-background border-none capitalize',
             },
           }}
         />

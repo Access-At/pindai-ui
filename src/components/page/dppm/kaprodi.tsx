@@ -58,6 +58,8 @@ import { useForm } from 'react-hook-form'
 import { kaprodiSchema, KaprodiType } from '~/zodSchema/dppm/kaprodi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { kaprodiField } from '~/constant/field'
+import InputField from '~/components/input-field'
+import SelectionField from '~/components/selection-field'
 
 function KaprodiRow({
   kaprodi,
@@ -315,7 +317,30 @@ export default function Kaprodi() {
               onSubmit={onSubmit}
               className="flex flex-col gap-4 uppercase"
             >
-              <EachUtil
+              <InputField
+                control={form.control}
+                name="name"
+                label="nama kaprodi"
+              />
+              <InputField
+                control={form.control}
+                name="email"
+                label="email"
+                type="email"
+              />
+              <InputField control={form.control} name="nidn" label="nidn" />
+              <InputField
+                control={form.control}
+                name="address"
+                label="address"
+              />
+              <SelectionField
+                control={form.control}
+                name="fakultas_id"
+                label="fakultas"
+                options={fakultas || []}
+              />
+              {/* <EachUtil
                 of={kaprodiField}
                 render={(item, index) =>
                   item.select ? (
@@ -342,7 +367,7 @@ export default function Kaprodi() {
                     />
                   )
                 }
-              />
+              /> */}
             </Forms>
           </DialogContent>
         </Dialog>

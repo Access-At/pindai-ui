@@ -26,3 +26,13 @@ export async function updateDosen(id: string, data: DosenType) {
   const request = await api.put(`/kaprodi/dosen/${id}`, data)
   return request.data
 }
+
+export async function approvedDosen(id: string) {
+  const request = await api.post(`/kaprodi/approved/dosen/${id}`)
+  return request.data
+}
+
+export async function activeDosen(id: string, is_active: boolean) {
+  const request = await api.post(`/kaprodi/active/dosen/${id}`, { is_active })
+  return request.data
+}

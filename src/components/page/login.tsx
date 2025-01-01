@@ -1,17 +1,6 @@
 'use client'
-
-// import {
-//   Form,
-//   FormControl,
-//   FormField,
-//   FormItem,
-//   FormLabel,
-//   FormMessage,
-// } from '~/components/ui/form'
 import { getCookieDecrypted, setCookie } from '~/utils/cookie'
 
-// import { Button } from '~/components/ui/button'
-// import { Input } from '~/components/ui/input'
 import { authSchema, AuthType } from '~/zodSchema/authSchema'
 import { authenticateUser } from '~/api/request/auth-request'
 import { toast } from 'sonner'
@@ -19,9 +8,8 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-// import { LoaderCircleIcon } from 'lucide-react'
-import Forms, { FormFields } from '../forms'
-import EachUtil from '~/utils/each-util'
+import Forms from '../forms'
+import InputField from '../input-field'
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
@@ -68,64 +56,18 @@ export default function LoginForm() {
       btnText="Login"
       className="flex flex-col gap-4 w-auto"
     >
-      <EachUtil
-        of={[
-          {
-            name: 'email',
-            label: 'Email',
-            type: 'email',
-          },
-          {
-            name: 'password',
-            label: 'Password',
-            type: 'password',
-          },
-        ]}
-        render={(item, index) => (
-          <FormFields type="input" item={item} key={index} form={form} />
-        )}
+      <InputField
+        label="Email"
+        name="email"
+        type="email"
+        control={form.control}
+      />
+      <InputField
+        label="Password"
+        name="password"
+        type="password"
+        control={form.control}
       />
     </Forms>
-    // <Form {...form}>
-    //   <form
-    //     onSubmit={form.handleSubmit(onSubmit)}
-    //     className="flex flex-col gap-4 w-auto"
-    //   >
-    //     <FormField
-    //       control={form.control}
-    //       name="email"
-    //       render={({ field }) => (
-    //         <FormItem>
-    //           <FormLabel>Email</FormLabel>
-    //           <FormControl>
-    //             <Input type="email" autoComplete="email" {...field} />
-    //           </FormControl>
-    //           <FormMessage />
-    //         </FormItem>
-    //       )}
-    //     />
-
-    //     <FormField
-    //       control={form.control}
-    //       name="password"
-    //       render={({ field }) => (
-    //         <FormItem>
-    //           <FormLabel>Password</FormLabel>
-    //           <FormControl>
-    //             <Input
-    //               type="password"
-    //               autoComplete="current-password"
-    //               {...field}
-    //             />
-    //           </FormControl>
-    //           <FormMessage />
-    //         </FormItem>
-    //       )}
-    //     />
-    //     <Button type="submit" disabled={loading}>
-    //       Login {loading && <LoaderCircleIcon className="animate-spin" />}
-    //     </Button>
-    //   </form>
-    // </Form>
   )
 }

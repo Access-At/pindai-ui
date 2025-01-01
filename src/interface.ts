@@ -28,10 +28,13 @@ export interface IDosen {
   job_functional: string
   address: string
   name: string
+  email: string
   nidn: string
   prodi: string
   scholar_id: string
   scopus_id: string
+  is_approved: boolean
+  is_active: boolean
 }
 
 export interface IKaprodi {
