@@ -12,6 +12,7 @@ import {
   fetchFakultasList,
   fetchProdiList,
 } from '~/api/request/request'
+import Forms, { FormFields } from '~/components/forms'
 import fakultas from '~/components/page/dppm/fakultas'
 import {
   Breadcrumb,
@@ -118,6 +119,7 @@ export default function Profile() {
   }
 
   const handleFakultasChange = async (fakultasId: string) => {
+    console.log(fakultasId)
     form.setValue('fakultas_id', fakultasId)
     form.setValue('prodi_id', '') // Reset prodi when fakultas changes
     try {
@@ -145,7 +147,46 @@ export default function Profile() {
           <CardTitle>Informasi Pribadi</CardTitle>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
+          <Forms
+            form={form}
+            onSubmit={onSubmit}
+            isLoading={isLoading}
+            btnText="Simpan"
+            className="flex flex-col gap-4 uppercase"
+          >
+            <EachUtil
+              of={profileField}
+              render={(item, index) =>
+                item.name === 'fakultas_id' ? (
+                  <FormFields
+                    item={item}
+                    form={form}
+                    key={index}
+                    handleSelect={handleFakultasChange}
+                    list={fakultasList}
+                    type="select"
+                  />
+                ) : item.name === 'prodi_id' ? (
+                  <FormFields
+                    item={item}
+                    form={form}
+                    key={index}
+                    handleSelect={handleFakultasChange}
+                    list={prodiList}
+                    type="select"
+                  />
+                ) : (
+                  <FormFields
+                    item={item}
+                    form={form}
+                    key={index}
+                    type="input"
+                  />
+                )
+              }
+            />
+          </Forms>
+          {/* <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
               className="uppercase space-y-4"
@@ -260,7 +301,7 @@ export default function Profile() {
                 Simpan Perubahan
               </Button>
             </form>
-          </Form>
+          </Form> */}
         </CardContent>
       </Card>
     </div>

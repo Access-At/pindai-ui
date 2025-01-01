@@ -51,7 +51,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '~/components/ui/dialog'
-import Forms from '~/components/forms'
+import Forms, { FormFields } from '~/components/forms'
 import { fetchFakultasList } from '~/api/request/request'
 import { FakultasType } from '~/zodSchema/dppm/fakultas'
 import { useForm } from 'react-hook-form'
@@ -150,12 +150,39 @@ function KaprodiRow({
                   </DialogDescription>
                   <Forms
                     form={form}
-                    fields={kaprodiField}
                     btnText="simpan"
-                    list={fakultas}
                     onSubmit={onSubmit}
                     className="flex flex-col gap-4 uppercase"
-                  />
+                  >
+                    <EachUtil
+                      of={kaprodiField}
+                      render={(item, index) =>
+                        item.select ? (
+                          <FormFields
+                            key={index}
+                            type="select"
+                            list={fakultas}
+                            item={item}
+                            form={form}
+                          />
+                        ) : item.radio ? (
+                          <FormFields
+                            key={index}
+                            type="radio"
+                            item={item}
+                            form={form}
+                          />
+                        ) : (
+                          <FormFields
+                            key={index}
+                            type="input"
+                            item={item}
+                            form={form}
+                          />
+                        )
+                      }
+                    />
+                  </Forms>
                 </DialogContent>
               </Dialog>
             </TooltipTrigger>
@@ -284,12 +311,39 @@ export default function Kaprodi() {
             </DialogDescription>
             <Forms
               form={form}
-              fields={kaprodiField}
               btnText="simpan"
-              list={fakultas}
               onSubmit={onSubmit}
               className="flex flex-col gap-4 uppercase"
-            />
+            >
+              <EachUtil
+                of={kaprodiField}
+                render={(item, index) =>
+                  item.select ? (
+                    <FormFields
+                      key={index}
+                      type="select"
+                      item={item}
+                      list={fakultas}
+                      form={form}
+                    />
+                  ) : item.radio ? (
+                    <FormFields
+                      key={index}
+                      type="radio"
+                      item={item}
+                      form={form}
+                    />
+                  ) : (
+                    <FormFields
+                      key={index}
+                      type="input"
+                      item={item}
+                      form={form}
+                    />
+                  )
+                }
+              />
+            </Forms>
           </DialogContent>
         </Dialog>
       </CardHeader>

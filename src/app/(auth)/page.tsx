@@ -1,5 +1,6 @@
-import { Card, CardContent, CardHeader } from '~/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader } from '~/components/ui/card'
 import LoginForm from '~/components/page/login'
+import Register from '~/components/page/register'
 
 export default async function Login() {
   return (
@@ -10,6 +11,10 @@ export default async function Login() {
       <CardContent className="flex flex-col w-full">
         <LoginForm />
       </CardContent>
+      <CardFooter className="text-muted-foreground capitalize text-sm space-x-2">
+        tidak memiliki akun ?
+        <Register />
+      </CardFooter>
     </Card>
   )
 }

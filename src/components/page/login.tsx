@@ -20,7 +20,8 @@ import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 // import { LoaderCircleIcon } from 'lucide-react'
-import Forms from '../forms'
+import Forms, { FormFields } from '../forms'
+import EachUtil from '~/utils/each-util'
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
@@ -54,23 +55,29 @@ export default function LoginForm() {
   return (
     <Forms
       form={form}
-      fields={[
-        {
-          name: 'email',
-          label: 'Email',
-          type: 'email',
-        },
-        {
-          name: 'password',
-          label: 'Password',
-          type: 'password',
-        },
-      ]}
       onSubmit={onSubmit}
       isLoading={loading}
       btnText="Login"
       className="flex flex-col gap-4 w-auto"
-    />
+    >
+      <EachUtil
+        of={[
+          {
+            name: 'email',
+            label: 'Email',
+            type: 'email',
+          },
+          {
+            name: 'password',
+            label: 'Password',
+            type: 'password',
+          },
+        ]}
+        render={(item, index) => (
+          <FormFields type="input" item={item} key={index} form={form} />
+        )}
+      />
+    </Forms>
     // <Form {...form}>
     //   <form
     //     onSubmit={form.handleSubmit(onSubmit)}

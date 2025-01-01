@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Children, JSX } from 'react'
 
-type Props = {
-  of: any[]
-  render: (item: any, index: number) => JSX.Element
+interface Props<T> {
+  of: T[]
+  render: (item: T, index: number) => JSX.Element
 }
 
-export default function EachUtil({ of, render }: Props) {
+export default function EachUtil<T>({ of, render }: Props<T>) {
   return Children.toArray(of.map((item, index) => render(item, index)))
 }
